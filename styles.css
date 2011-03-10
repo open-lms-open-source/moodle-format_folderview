@@ -1,0 +1,22 @@
+.topiclistlink { float:right; padding:0.5em 0.5em 0; }
+#completionprogressid { padding:0.5em 0.5em 0; }
+.fixfloat { height:1px;overflow:hidden;clear:both; }
+
+/* Expand collapse CSS. Folder IMG src is set to a blank image and background
+image is used so we can swap state images using CSS */
+img.folder_icon { background-image:url([[pix:format_folderview|folder_open]]); background-repeat:no-repeat;width:32px; height:32px; }
+.collapsed img.folder_icon { background-image:url([[pix:format_folderview|folder]]); }
+.collapsed div.content div.summary,
+.collapsed div.content ul.section { display:none; }
+.pagetopic.collapsed div.content div.summary,
+.pagetopic.collapsed div.content ul.section { display:block; }
+.content h3:first-child { margin:6px; }
+
+/* Add dialog css */
+#addBlock .column { float:left;min-width:15%;max-width:33%; }
+#addBlock .column a { display:block; padding:0.25em 20px 0.25em 0px; }
+.rescat { float:left;padding:0.25em;margin:0.25em;border-style:none;min-width:34%; }
+.rescat legend { font-weight:bold; }
+
+.course-content ul.topics li.section .right.side {float: right; width: auto; }
+.course-content ul.topics li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
