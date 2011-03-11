@@ -460,11 +460,15 @@ if ($showsection) {
 		echo '<div class="right side nodisplay"></div>';
 	    echo '<div class="content">';
 	    	echo '<div class="summary">';
-	    	$summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
-	    	$summaryformatoptions = new stdClass();
-	    	$summaryformatoptions->noclean = true;
-	    	$summaryformatoptions->overflowdiv = true;
-	    	echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
+            if ($thissection->summary) {
+                $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
+                $summaryformatoptions = new stdClass();
+                $summaryformatoptions->noclean = true;
+                $summaryformatoptions->overflowdiv = true;
+                echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
+            } else {
+                echo '<div class="fixfloat">&nbsp;</div>';
+            }
 	    	echo '</div>';
 		    print_section($course, $thissection, $mods, $modnamesused);
 	    echo '</div>';
@@ -489,7 +493,6 @@ while ($section <= $course->numsections) {
 
     if (!empty($sections[$section])) {
         $thissection = $sections[$section];
-
     } else {
 		//Maybe change this, do we Really need at least one topic besides topic 0?
         $thissection = new stdClass;
