@@ -243,7 +243,7 @@ if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
 	}
 	echo '</div>';
 } else {
-	echo '<div id="topiclinktop" class="topiclistlink"><a href="javascript:void(M.format_folderview.expandSection())" title="'.$strexpandall.'"><img src="'.$OUTPUT->pix_url('t/switch_plus').'" alt="'.$strexpandall.'" /></a> <a href="javascript:void(M.format_folderview.collapseSection())" title="'.$strcollapseall.'"><img src="'.$OUTPUT->pix_url('t/switch_minus').'" alt="'.$strcollapseall.'" /></a></div>';
+	echo '<div id="topiclinktop" class="topiclistlink"><a href="javascript:void(M.format_folderview.expandSection(\'0\'))" title="'.$strexpandall.'"><img src="'.$OUTPUT->pix_url('t/switch_plus').'" alt="'.$strexpandall.'" /></a> <a href="javascript:void(M.format_folderview.collapseSection(\'0\'))" title="'.$strcollapseall.'"><img src="'.$OUTPUT->pix_url('t/switch_minus').'" alt="'.$strcollapseall.'" /></a></div>';
 }
 
 //Make sure user can view the current topic

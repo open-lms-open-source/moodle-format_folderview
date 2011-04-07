@@ -87,8 +87,12 @@ M.format_folderview.toggleSection = function (id, bFocus) {
 
 M.format_folderview.expandSection = function (id, bFocus, bLoading) {
 	var lis = [0];
-	if (!id) { lis = document.getElementsByClassName('section'); }
-	else { lis[1] = document.getElementById('section-'+id); }
+	if (id > 0) { lis[1] = document.getElementById('section-'+id); }
+	else {
+        for( x = 1; x < format_folderview_vars.numsections+1; x++ ){
+            lis[x] = document.getElementById('section-'+x);
+        }
+    }
 	for (var x=1; x<lis.length; x++) {
 		var el = lis[x];
 		if (el && el.className && el.id) {
@@ -107,8 +111,12 @@ M.format_folderview.expandSection = function (id, bFocus, bLoading) {
 
 M.format_folderview.collapseSection = function (id, bFocus, bLoading) {
 	var lis = [0];
-	if (!id) { lis = document.getElementsByClassName('section'); }
-	else { lis[1] = document.getElementById('section-'+id); }
+	if (id > 0) { lis[1] = document.getElementById('section-'+id); }
+	else {  
+        for( x = 1; x < format_folderview_vars.numsections+1; x++ ){
+            lis[x] = document.getElementById('section-'+x);
+        }
+    }
 	for (var x=1; x<lis.length; x++) {
 		var el = lis[x];
 		if (el && el.className && el.id) {
@@ -128,7 +136,7 @@ M.format_folderview.collapseSection = function (id, bFocus, bLoading) {
 M.format_folderview.saveToggles = function () {
 	var ck = format_folderview_vars.toggles.join('')+'000000000000000000000000000000000000000000000000000000000000';
 	var hex = [];
-	for (var x=0; x<=format_folderview_vars.numsections; x+=5) {
+	for (var x=0; x<=format_folderview_vars.numsections+1; x+=5) {
 		var binStr = ck.substr(x,5);
 		var hexStr = (format_folderview_vars.base32[binStr]!='undefined')?format_folderview_vars.base32[binStr]:'0';
 		hex.push(hexStr);
@@ -148,6 +156,7 @@ M.format_folderview.loadToggles = function () {
 			format_folderview_vars.toggles.push(parseInt(binStr.charAt(y)));
 		}
 	}
+    
 	//add missing elements
 	while (format_folderview_vars.length < format_folderview_vars.numsections) {
 		format_folderview_vars.toggles.push(0);
@@ -179,7 +188,7 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 	// Init.
 	format_folderview_vars.wwwroot = wwwroot; //main.portal.strings['wwwroot'];
 	format_folderview_vars.courseid = courseid; //main.portal.id;
-	format_folderview_vars.numsections = numsections; //main.portal.numsections;
+	format_folderview_vars.numsections = parseInt(numsections); //main.portal.numsections;
 	format_folderview_vars.subname = siteshortname.replace(/[^A-Za-z0-9]/g)+format_folderview_vars.courseid.toString();
 	format_folderview_vars.movetext = 'Move';
 	if (d.hasClass(document.body, 'drag')) {
