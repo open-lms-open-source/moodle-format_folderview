@@ -236,10 +236,11 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 		var liTags = d.getElementsByClassName('section', 'li', 'region-main');
 		var strMove = main.portal.strings['move'];
 		for (var x=0; x<liTags.length; x++) {
-			var aTags = liTags[x].getElementsByTagName('a');
+            var strMoveAlt = strMove+' section '+x;
+			var aTags = liTags[x].getElementsByTagName('a'); // IE sems to have a different title for the move icon under the folder.
 			for (var y=0; y<aTags.length; y++) {
 				//Add class to drag handles
-				if (aTags[y].getAttribute('title')==strMove) {
+				if (aTags[y].getAttribute('title')==strMove || aTags[y].getAttribute('title')== strMoveAlt) {
 					d.addClass(aTags[y], 'draghandle');
 					var ancs = d.getAncestorByTagName(aTags[y], 'li');
 					if (d.hasClass(ancs, 'activity')) {  
