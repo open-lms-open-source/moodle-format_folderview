@@ -20,3 +20,4 @@ img.folder_icon { background-image:url([[pix:format_folderview|folder_open]]); b
 
 .course-content ul.topics li.section .right.side {float: right; width: auto; }
 .course-content ul.topics li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
+.editing li.activity .commands {z-index:999;display:inline-block;padding:5px;margin:0px 3px;position:absolute;right:0px;top:0px;}
