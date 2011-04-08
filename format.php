@@ -56,7 +56,7 @@ if ($editing) {
 define('COURSE_LAYOUT_COLLAPSED', 0);
 define('COURSE_LAYOUT_EXPANDED', 1);
 define('COURSE_LAYOUT_SINGLE', 2);
-	
+
 //define constants for default topic title format
 define('TOPIC_DEFAULT_TOPIC', 0);
 define('TOPIC_DEFAULT_WEEK', 1);
@@ -103,7 +103,7 @@ $showsubtitle = 1;
 
 //Determine 'focused' section and persist if changed
 $topic = optional_param('topic', -1, PARAM_INT);
-if (empty($sections[$topic])) { 
+if (empty($sections[$topic])) {
 	$topic = 0;
 }
 if ($topic != -1) {
@@ -143,7 +143,7 @@ $sectionweeks['0'] = '';
 //Create an array of the section names and force a default for the Topic 0
 $strsectionnames = array();
 $strsectionnames['0'] = $strtopiclisttitle;
-if (!is_null($sections['0']->name) and $sections['0']->name !='') { 
+if (!is_null($sections['0']->name) and $sections['0']->name !='') {
 	$strsectionnames['0'] = $sections['0']->name;
 }
 
@@ -160,8 +160,8 @@ while ($x <= $course->numsections) {
 	if (empty($sections[$x])) {
 		$sections[$x] = get_course_section($x, $course->id);
 	}
-	if (!is_null($sections[$x]->name) and $sections[$x]->name !='') { 
-		$thename = $sections[$x]->name; 
+	if (!is_null($sections[$x]->name) and $sections[$x]->name !='') {
+		$thename = $sections[$x]->name;
 	} else {
 		$thename = get_section_name($course, $sections[$x]);
 	}
@@ -214,7 +214,7 @@ if (!$screenreader) {
 	echo '.dlg_addActivity #addActivity { display:block; } ';
 	echo '.dlg_addBlock #addBlock { display:block; } ';
 	echo '.dlg_addTopic #addTopic { display:block; } ';
-	echo '.dlg_editLayout #editLayout { display:block; } ';	
+	echo '.dlg_editLayout #editLayout { display:block; } ';
 	//Make the bottom border white so it appears connected to the dialog panel
 	echo '.dlg_addActivity #tab_addActivity, .dlg_addBlock #tab_addBlock, .dlg_addTopic #tab_addTopic, .dlg_addResource #tab_addResource, .dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  } ';
 	echo '.menuPanelTabs .tab { display:inline-block; } ';
@@ -247,7 +247,7 @@ if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
 }
 
 //Make sure user can view the current topic
-$showsection = ($hasviewhiddensections or $thissection->visible or !$course->hiddensections);
+$showsection = get_section_show($thissection, $modinfo);
 
 /******************** Page Title *******************/
 //Write out the page title (and Completion info if topic 0)
@@ -312,7 +312,7 @@ if ($showsection && $editing) {
 	if ($hascourseupdate) {
 		$newsectionnum = $course->numsections + 1;
 	    echo '<div id="addTopic" class="dialog" tabindex="-1">';
-		if ($screenreader) { 
+		if ($screenreader) {
 	        echo $OUTPUT->heading($straddtopic, 3, null, 'tab_addTopic');
 		}
 		echo '<form method="GET" action="view.php">';
@@ -332,7 +332,7 @@ if ($showsection && $editing) {
 	//Add Resources section
 	if ($hasmanageactivities) {
     	echo '<div id="addResource" class="dialog" tabindex="-1">';
-		if ($screenreader) { 
+		if ($screenreader) {
 	        echo $OUTPUT->heading($straddresource, 3, null, 'tab_addResource');
 		}
 		echo '<form method="GET" action="'.$CFG->wwwroot.'/course/mod.php">';
@@ -451,14 +451,23 @@ if (ismoving($course->id)) {
 
 /******************** Main Topic Content *******************/
 if ($showsection) {
+    if (!empty($CFG->enableavailability)) {
+        // This can still be false!  Check PHPDoc for more info.
+        $sectioninfo = $modinfo->get_section($thissection->section);
+    } else {
+        $sectioninfo = false;
+    }
     echo '<li id="section-'.$thissection->section.'" class="section main clearfix pagetopic" >';
 	if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
 		echo '<div class="content"><div class="summary">'.get_string('notavailable').'</div></div>';
+    } else if ($sectioninfo and !$sectioninfo->uservisible) {
+        echo '<div class="content"><div class="summary">'.$sectioninfo->availableinfo.'</div></div>';
 	} else {
 	    echo '<div class="left side"></div>';
 		//Hide the right side items for the page topic section via nodisplay class
 		echo '<div class="right side nodisplay"></div>';
 	    echo '<div class="content">';
+        echo get_section_full_availability_info($thissection, $modinfo);
 	    	echo '<div class="summary">';
             if ($thissection->summary) {
                 $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
@@ -502,19 +511,19 @@ while ($section <= $course->numsections) {
         $thissection->summary  = '';
         $thissection->summaryformat = FORMAT_HTML;
         $thissection->visible  = 1;
-        //$thissection->id = $DB->insert_record('course_sections', $thissection);
+        $thissection->id = $DB->insert_record('course_sections', $thissection);
     }
 
-	$showsection = (!empty($sections[$section]) && ($hasviewhiddensections or $thissection->visible or !$course->hiddensections));
+	$showsection = get_section_show($thissection, $modinfo);
 
     $currenttopic = ($thissection->section == $topic);
 
 	if ($showsection) {
         $sectionmenu[$section] = $strsectionnames[$section];
 	}
-	
+
 	if ($listtopics && $showsection) {
-	
+
 		$strshowonlytopic = get_string("showonlytopic", "", $section);
 		$linkurl = "view.php?id=$course->id&amp;topic=$section&amp;sesskey=".sesskey();
 		$linktitle = $strshowonlytopic;
@@ -543,8 +552,8 @@ while ($section <= $course->numsections) {
 		} else {
 			$strcollapsedstyle = '';
 		}
-	
-        echo '<li id="section-'.$section.'" class="section main clearfix'.$sectionstyle.$strcollapsedstyle.'">'; 
+
+        echo '<li id="section-'.$section.'" class="section main clearfix'.$sectionstyle.$strcollapsedstyle.'">';
 
 		echo '<div class="left side">';
 		echo '<div class="topic_bullet">';
@@ -601,9 +610,18 @@ while ($section <= $course->numsections) {
 		}
 		//Always output content for expand/collapsed, CSS will be used to hide/show contents
 		if ($displaymode != COURSE_LAYOUT_SINGLE) {
+            if (!empty($CFG->enableavailability)) {
+                // This can still be false!  Check PHPDoc for more info.
+                $sectioninfo = $modinfo->get_section($thissection->section);
+            } else {
+                $sectioninfo = false;
+            }
         	if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
             	echo '<div class="summary">'.get_string('notavailable').'</div>';
+            } else if ($sectioninfo and !$sectioninfo->uservisible) {
+                echo '<div class="summary">'.$sectioninfo->availableinfo.'</div>';
 			} else {
+                echo get_section_full_availability_info($thissection, $modinfo);
 				echo '<div class="summary">';
 				if ($thissection->summary) {
 					$summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
@@ -635,7 +653,7 @@ if ($editing and $hascourseupdate) {
         if (empty($modinfo->sections[$section])) {
             continue;
         }
-        echo '<li id="section-'.$section.'" class="section main clearfix orphaned hidden">'; 
+        echo '<li id="section-'.$section.'" class="section main clearfix orphaned hidden">';
         echo '<div class="left side">';
         echo '</div>';
         // Note, 'right side' is BEFORE content.
