@@ -74,7 +74,7 @@ $hascourseupdate = has_capability('moodle/course:update', $coursecontext);
 $hasmanageactivities = has_capability('moodle/course:manageactivities', $coursecontext);
 
 $screenreader = !empty($USER->screenreader);
-$ajaxok = (!empty($USER->ajax) && !$screenreader);
+$ajaxok = (ajaxenabled() && !$screenreader);
 
 //Process New Section Request
 $newsection = optional_param('newsection', null, PARAM_TEXT);
