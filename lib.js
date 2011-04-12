@@ -1,25 +1,25 @@
 M.format_folderview = M.format_folderview || {};
 
 var format_folderview_vars = {
-	'wwwroot':'', 
-	'courseid':'', 
-	'numsections':0, 
+	'wwwroot':'',
+	'courseid':'',
+	'numsections':0,
 	'cookiename':'mdl_cf_folderview',
-	'subname':'', 
-	'cookie':'', 
-	'toggles':[], 
-	'base32': { 
+	'subname':'',
+	'cookie':'',
+	'toggles':[],
+	'base32': {
 		'0':'00000','1':'00001','2':'00010','3':'00011','4':'00100','5':'00101','6':'00110','7':'00111','8':'01000','9':'01001','A':'01010','B':'01011','C':'01100','D':'01101','E':'01110','F':'01111',
-		'00000':'0','00001':'1','00010':'2','00011':'3','00100':'4','00101':'5','00110':'6','00111':'7','01000':'8','01001':'9','01010':'A','01011':'B','01100':'C','01101':'D','01110':'E','01111':'F', 
-		'G':'10000','H':'10001','I':'10010','J':'10011','K':'10100','L':'10101','M':'10110','N':'10111','O':'11000','P':'11001','Q':'11010','R':'11011','S':'11100','T':'11101','U':'11110','V':'11111', 
-		'10000':'G','10001':'H','10010':'I','10011':'J','10100':'K','10101':'L','10110':'M','10111':'N','11000':'O','11001':'P','11010':'Q','11011':'R','11100':'S','11101':'T','11110':'U','11111':'V' 
+		'00000':'0','00001':'1','00010':'2','00011':'3','00100':'4','00101':'5','00110':'6','00111':'7','01000':'8','01001':'9','01010':'A','01011':'B','01100':'C','01101':'D','01110':'E','01111':'F',
+		'G':'10000','H':'10001','I':'10010','J':'10011','K':'10100','L':'10101','M':'10110','N':'10111','O':'11000','P':'11001','Q':'11010','R':'11011','S':'11100','T':'11101','U':'11110','V':'11111',
+		'10000':'G','10001':'H','10010':'I','10011':'J','10100':'K','10101':'L','10110':'M','10111':'N','11000':'O','11001':'P','11010':'Q','11011':'R','11100':'S','11101':'T','11110':'U','11111':'V'
 	},
-	'BASE32CHARS':'01234567890ABCDEFGHIJKLMNOPQRSTUV',
+	'BASE32CHARS':'01234567890ABCDEFGHIJKLMNOPQRSTUV'
 };
 
 
 M.format_folderview.hideContextMenu = function () {
-	clearTimeout(window.cmtimer); 
+	clearTimeout(window.cmtimer);
 	if (window.cmenu) {
 		window.cmenu.style.display = 'none';
 		window.cmenu = null;
@@ -112,7 +112,7 @@ M.format_folderview.expandSection = function (id, bFocus, bLoading) {
 M.format_folderview.collapseSection = function (id, bFocus, bLoading) {
 	var lis = [0];
 	if (id > 0) { lis[1] = document.getElementById('section-'+id); }
-	else {  
+	else {
         for( x = 1; x < format_folderview_vars.numsections+1; x++ ){
             lis[x] = document.getElementById('section-'+x);
         }
@@ -156,7 +156,7 @@ M.format_folderview.loadToggles = function () {
 			format_folderview_vars.toggles.push(parseInt(binStr.charAt(y)));
 		}
 	}
-    
+
 	//add missing elements
 	while (format_folderview_vars.length < format_folderview_vars.numsections) {
 		format_folderview_vars.toggles.push(0);
@@ -194,7 +194,7 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 	if (d.hasClass(document.body, 'drag')) {
 		try { format_folderview_vars.movetext = main.portal.strings['move']; } catch(e) {}
 	}
-	
+
 	//Fix flipped summaries and section lists that happens for some reason when section list s empty
 	var sums = d.getElementsByClassName('section', 'ul');
 	for (var x=0; x<sums.length; x++) {
@@ -243,12 +243,12 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 				if (aTags[y].getAttribute('title')==strMove || aTags[y].getAttribute('title')== strMoveAlt) {
 					d.addClass(aTags[y], 'draghandle');
 					var ancs = d.getAncestorByTagName(aTags[y], 'li');
-					if (d.hasClass(ancs, 'activity')) {  
-						d.addClass(aTags[y], 'dragactivity'); 
+					if (d.hasClass(ancs, 'activity')) {
+						d.addClass(aTags[y], 'dragactivity');
 						d.insertBefore(aTags[y], ancs.firstChild);
 						//d.insertBefore(aTags[y], aTags[y].parentNode.parentNode.firstChild);
 					} else if (d.hasClass(ancs, 'section')) {
-						d.addClass(aTags[y], 'dragsection'); 
+						d.addClass(aTags[y], 'dragsection');
 					}
 				}
 			}
@@ -265,7 +265,7 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 		format_folderview_vars.toggles[0] = (document.location.search.indexOf('subtitle=1')!=-1)?1:0;
 		M.format_folderview.saveToggles();
 	}
-	
+
 	if (format_folderview_vars.toggles[0]==0) {
 		d.addClass(d.getElementsByClassName('sectionsubtitle'), 'hide');
 		d.addClass(d.getElementsByClassName('pagesubtitle'), 'hide');
