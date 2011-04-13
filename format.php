@@ -188,11 +188,8 @@ if ($ajaxok) {
 	echo '.editlayout .course-content ul.topics li.section .content {margin-left:70px;} ';
 	echo '.editlayout .right.side { display:none; } ';
 	echo '.right.side>div { margin-bottom:3px; } ';
-	//echo '.dragactivity { margin-right:3px;float:left;display:none; }';
 	echo '.dragsection img { width:24px; height:24px; }';
 	echo '.dragactivity img { width:16px; height:16px; }';
-	//a max-height and overflow hidden are specified to make dnd easier with long label items
-	echo '.editlayout li.activity { border:1px dotted #cccccc; }';
 	echo '.editlayout .topicmenu { display:none; }';
 }
 
