@@ -103,20 +103,14 @@ $showsubtitle = 1;
 
 //Determine 'focused' section and persist if changed
 $topic = optional_param('topic', -1, PARAM_INT);
-if (empty($sections[$topic])) {
-	$topic = 0;
-}
+
 if ($topic != -1) {
-    $topic = course_set_display($course->id, $topic);
+    $displaysection = course_set_display($course->id, $topic);
 	$topicparam = "&topic=".$topic;
 } else {
-    if (isset($USER->display[$course->id])) {
-        $topic = $USER->display[$course->id];
-    } else {
-        $topic = course_set_display($course->id, 0);
-    }
+    $displaysection = course_get_display($course->id, 0);
 }
-$isroot = ($topic==0);
+$isroot = ($displaysection==0);
 if (!$isroot) {
 	$displaymode = COURSE_LAYOUT_SINGLE;
 }
@@ -124,7 +118,7 @@ if (!$isroot) {
 $section = 0;
 //For single topic we output the current topic at the top
 if ($displaymode == COURSE_LAYOUT_SINGLE) {
-	$section = $topic;
+	$section = $displaysection;
 }
 $thissection = $sections[$section];
 
