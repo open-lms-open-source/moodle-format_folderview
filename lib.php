@@ -44,7 +44,7 @@ function callback_folderview_uses_sections() {
  * @return bool Returns true
  */
 function callback_folderview_load_content(&$navigation, $course, $coursenode) {
-    return $navigation->load_generic_course_sections($course, $coursenode, 'topics');
+    return $navigation->load_generic_course_sections($course, $coursenode, 'folderview');
 }
 
 /**
@@ -54,7 +54,7 @@ function callback_folderview_load_content(&$navigation, $course, $coursenode) {
  * @return string
  */
 function callback_folderview_definition() {
-    return get_string('defaultsectionname','format_folderview');
+    return get_string('sectionname','format_folderview');
 }
 
 /**
@@ -74,7 +74,7 @@ function callback_folderview_get_section_name($course, $section) {
     } else if ($section->section == 0) {
         return get_string('section0name', 'format_folderview');
     } else {
-        return get_string('defaultsectionname','format_folderview').' '.$section->section;
+        return get_string('sectionname','format_folderview').' '.$section->section;
     }
 }
 

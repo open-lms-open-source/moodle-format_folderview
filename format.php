@@ -14,7 +14,7 @@ require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $strtopiclisttitle = get_string('section0name', 'format_folderview');
-$strsectionname = get_string('defaultsectionname', 'format_folderview');
+$strsectionname = get_string('sectionname', 'format_folderview');
 $straddtopic = get_string('addtopic', 'format_folderview');
 $straddresource = get_string('addresource', 'format_folderview');
 $straddblock = get_string('addblock', 'format_folderview');
@@ -149,7 +149,7 @@ while ($x <= $course->numsections) {
 	$endweekday = userdate($weekdate+518400, $strftimedateshort);
 	$sectionweeks[$x] = $weekday.' - '.$endweekday;
 
-	$thename = 'Topic '.$x;
+	$thename = $strsectionname.' '.$x;
 	//Handle missing sections by creating them with a call to get_course_section which creates it with appropriate defaults
 	if (empty($sections[$x])) {
 		$sections[$x] = get_course_section($x, $course->id);
