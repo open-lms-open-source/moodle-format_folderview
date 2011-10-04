@@ -182,37 +182,13 @@ if ($ajaxok) {
 	echo '.editlayout .course-content ul.topics li.section .content {margin-left:70px;} ';
 	echo '.editlayout .right.side { display:none; } ';
 	echo '.right.side>div { margin-bottom:3px; } ';
-	echo '.dragsection img { width:24px; height:24px; }';
-	echo '.dragactivity img { width:16px; height:16px; }';
 	echo '.editlayout .topicmenu { display:none; }';
 }
 
 //Screen reader CSS
 if (!$screenreader) {
 	echo '.dialog { display:none; } ';
-	echo '#menuPanelClose { display:block; text-align:right; } ';
-	echo '#menuPanelDialog { border:1px solid; padding:10px; } ';
-	//The negative border is to allow the selected tab border to cover up the panel border so they appear connected
-	echo '.menuPanelTabs { margin-bottom:-1px; } ';
-	echo '.menuPanelTabs .tab { border-bottom:1px solid; padding: 3px 6px; } ';
-	echo '.nodialog .menuPanelTabs .tab { border:0px none; } ';
-	echo '.nodialog #menuPanelClose { display:none; } ';
-	echo '.nodialog #menuPanelDialog { border:0px none;padding:0px;margin:0px;-moz-border-radius:none; -webkit-border-radius:none; border-radius:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; } ';
-	echo '.dlg_addResource #addResource { display:block; min-height:1em; } ';
-	echo '#addResource .column { float:left; padding-right:1em; } ';
-	echo '#addResource .column .restype { padding:1px 0px; } ';
-	echo '#divAddToSection { clear:both; margin-top:1em; } ';
-	echo '.dlg_addActivity #addActivity { display:block; } ';
-	echo '.dlg_addBlock #addBlock { display:block; } ';
-	echo '.dlg_addTopic #addTopic { display:block; } ';
-	echo '.dlg_editLayout #editLayout { display:block; } ';
-	//Make the bottom border white so it appears connected to the dialog panel
-	echo '.dlg_addActivity #tab_addActivity, .dlg_addBlock #tab_addBlock, .dlg_addTopic #tab_addTopic, .dlg_addResource #tab_addResource, .dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  } ';
-	echo '.menuPanelTabs .tab { display:inline-block; } ';
-} else {
-	echo '.dialog { border:1px solid #999999; padding:0px 1em 1em; margin:1em 0px; }';
 }
-
 
 echo '</style>';
 

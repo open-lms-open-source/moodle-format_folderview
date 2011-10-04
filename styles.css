@@ -21,3 +21,30 @@ image is used so we can swap state images using CSS */
 #page-course-view-folderview .course-content ul.topics li.section .right.side {float: right; width: auto; }
 #page-course-view-folderview .course-content ul.topics li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
 #page-course-view-folderview.editing li.activity .commands {z-index:999;display:inline-block;padding:5px;margin:0px 3px;position:absolute;right:0px;top:0px;}
+
+#menuPanelClose { display:block; text-align:right; }
+#menuPanelDialog { border:1px solid; padding:10px; }
+    
+.menuPanelTabs { margin-bottom:-1px; }
+.menuPanelTabs .tab { border-bottom:1px solid; padding: 3px 6px; }
+.nodialog .menuPanelTabs .tab { border:0px none; }
+.nodialog #menuPanelClose { display:none; }
+.nodialog #menuPanelDialog { border:0px none;padding:0px;margin:0px;-moz-border-radius:none; -webkit-border-radius:none; border-radius:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; }
+.dlg_addResource #addResource { display:block; min-height:1em; }
+#addResource .column { float:left; padding-right:1em; }
+#addResource .column .restype { padding:1px 0px; }
+#divAddToSection { clear:both; margin-top:1em; }
+.dlg_addActivity #addActivity { display:block; }
+.dlg_addBlock #addBlock { display:block; }
+.dlg_addTopic #addTopic { display:block; }
+.dlg_editLayout #editLayout { display:block; }
+.dlg_addActivity #tab_addActivity, 
+.dlg_addBlock #tab_addBlock, 
+.dlg_addTopic #tab_addTopic, 
+.dlg_addResource #tab_addResource, 
+.dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  }
+.menuPanelTabs .tab { display:inline-block; }
+.dialog { border:1px solid #999999; padding:0px 1em 1em; margin:1em 0px; }
+
+.dragsection img { width:24px; height:24px; }
+.dragactivity img { width:16px; height:16px; }
