@@ -175,7 +175,7 @@ if ($ajaxok) {
 	//Drag-n-drop CSS
 	echo '.editlayout .draghandle { display:inline; } ';
 	echo '.nodisplay { display:none; } ';
-	echo '.draghandle { display:none;float:left; } ';
+	echo '.draghandle { float:left; } ';
 	echo '.pagetopic .dragsection { display:none !important; } ';
 	echo '.editlayout .course-content ul.topics li.section .left>div  { float:right; }';
 	echo '.editlayout .course-content ul.topics li.section .left {width:70px;max-width:70px;} ';
@@ -183,6 +183,9 @@ if ($ajaxok) {
 	echo '.editlayout .right.side { display:none; } ';
 	echo '.right.side>div { margin-bottom:3px; } ';
 	echo '.editlayout .topicmenu { display:none; }';
+    echo '.editing.jsenabled .course-content ul.topics li.section .left div { float:right; }';
+    echo '.editing.jsenabled .course-content ul.topics li.section .left .topic_bullet { padding-right: 5px; }';
+    echo '.editing.jsenabled .course-content ul.topics li.section .left { width: 70px; }';
 }
 
 //Screen reader CSS
