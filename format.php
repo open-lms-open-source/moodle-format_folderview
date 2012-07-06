@@ -96,13 +96,13 @@ $ajaxok = (ajaxenabled() && !$screenreader);
 $newsection = optional_param('newsection', null, PARAM_TEXT);
 $newsectionnum = optional_param('newsectionnum', 0, PARAM_INT);
 if ($editing && $hascourseupdate && ($newsectionnum == $course->numsections+1) && confirm_sesskey()) {
-	//fetch and/or create specified section
-	$thissection = get_course_section($newsectionnum, $course->id);
-	$DB->set_field('course_sections', 'name', $newsection, array('course'=>$course->id, 'section'=>$newsectionnum));
-	$thissection->name = $newsection;
-	$sections[$newsectionnum] = $thissection;
-	$course->numsections = $newsectionnum;
-	$DB->set_field('course', 'numsections', $newsectionnum, array('id'=>$course->id));
+    //fetch and/or create specified section
+    $thissection = get_course_section($newsectionnum, $course->id);
+    $DB->set_field('course_sections', 'name', $newsection, array('course'=>$course->id, 'section'=>$newsectionnum));
+    $thissection->name = $newsection;
+    $sections[$newsectionnum] = $thissection;
+    $course->numsections = $newsectionnum;
+    $DB->set_field('course', 'numsections', $newsectionnum, array('id'=>$course->id));
 }
 
 //Update marker if passed
@@ -122,19 +122,19 @@ $topic = optional_param('topic', -1, PARAM_INT);
 
 if ($topic != -1) {
     $displaysection = course_set_display($course->id, $topic);
-	$topicparam = "&topic=".$topic;
+    $topicparam = "&topic=".$topic;
 } else {
     $displaysection = course_get_display($course->id, 0);
 }
 $isroot = ($displaysection==0);
 if (!$isroot) {
-	$displaymode = COURSE_LAYOUT_SINGLE;
+    $displaymode = COURSE_LAYOUT_SINGLE;
 }
 
 $section = 0;
 //For single topic we output the current topic at the top
 if ($displaymode == COURSE_LAYOUT_SINGLE) {
-	$section = $displaysection;
+    $section = $displaysection;
 }
 $thissection = $sections[$section];
 
@@ -154,29 +154,29 @@ $sectionweeks['0'] = '';
 $strsectionnames = array();
 $strsectionnames['0'] = $strtopiclisttitle;
 if (!is_null($sections['0']->name) and $sections['0']->name !='') {
-	$strsectionnames['0'] = $sections['0']->name;
+    $strsectionnames['0'] = $sections['0']->name;
 }
 
 $x = 1;
 while ($x <= $course->numsections) {
-	$weekdate = $weekdate + ($weekofseconds);
-	$nextweekdate = $weekdate + ($weekofseconds);
-	$weekday = userdate($weekdate, $strftimedateshort);
-	$endweekday = userdate($weekdate+518400, $strftimedateshort);
-	$sectionweeks[$x] = $weekday.' - '.$endweekday;
+    $weekdate = $weekdate + ($weekofseconds);
+    $nextweekdate = $weekdate + ($weekofseconds);
+    $weekday = userdate($weekdate, $strftimedateshort);
+    $endweekday = userdate($weekdate+518400, $strftimedateshort);
+    $sectionweeks[$x] = $weekday.' - '.$endweekday;
 
-	$thename = $strsectionname.' '.$x;
-	//Handle missing sections by creating them with a call to get_course_section which creates it with appropriate defaults
-	if (empty($sections[$x])) {
-		$sections[$x] = get_course_section($x, $course->id);
-	}
-	if (!is_null($sections[$x]->name) and $sections[$x]->name !='') {
-		$thename = $sections[$x]->name;
-	} else {
-		$thename = get_section_name($course, $sections[$x]);
-	}
-	$strsectionnames[$x] = $thename;
-	$x++;
+    $thename = $strsectionname.' '.$x;
+    //Handle missing sections by creating them with a call to get_course_section which creates it with appropriate defaults
+    if (empty($sections[$x])) {
+        $sections[$x] = get_course_section($x, $course->id);
+    }
+    if (!is_null($sections[$x]->name) and $sections[$x]->name !='') {
+        $thename = $sections[$x]->name;
+    } else {
+        $thename = get_section_name($course, $sections[$x]);
+    }
+    $strsectionnames[$x] = $thename;
+    $x++;
 }
 
 //Create Section Menu array and Add the Topic Outline page to the list of sections
@@ -186,23 +186,23 @@ $sectionmenu['0'] = $strtopiclisttitle;
 
 /******************** Expand All/Collapse All/Topic List *******************/
 if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
-	//Show a link to the topics list if not on the topics list page
-	echo '<div id="topiclinktop" class="topiclistlink">';
-	if ($section!=0) {
-		if ($editing && $hascourseupdate) {
-			if ($thissection->visible) {        // Show the hide/show eye
-				echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;hide='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopichide.'">'.
-					'<img src="'.$OUTPUT->pix_url('t/hide').'" class="icon" alt="'.$strtopichide.'" /></a>';
-			} else {
-				echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;show='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopicshow.'">'.
-					'<img src="'.$OUTPUT->pix_url('t/show').'" class="icon" alt="'.$strtopicshow.'" /></a>';
-			}
-		}
-		echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&topic=0&sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopiclisttitle.'"><img src="'.$OUTPUT->pix_url('all','format_folderview').'" class="icon" alt="'.$strtopiclisttitle.'" /></a>';
-	}
-	echo '</div>';
+    //Show a link to the topics list if not on the topics list page
+    echo '<div id="topiclinktop" class="topiclistlink">';
+    if ($section!=0) {
+        if ($editing && $hascourseupdate) {
+            if ($thissection->visible) {        // Show the hide/show eye
+                echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;hide='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopichide.'">'.
+                    '<img src="'.$OUTPUT->pix_url('t/hide').'" class="icon" alt="'.$strtopichide.'" /></a>';
+            } else {
+                echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;show='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopicshow.'">'.
+                    '<img src="'.$OUTPUT->pix_url('t/show').'" class="icon" alt="'.$strtopicshow.'" /></a>';
+            }
+        }
+        echo '&nbsp;&nbsp;<a href="view.php?id='.$course->id.'&topic=0&sesskey='.sesskey().'#section-'.$section.'" title="'.$strtopiclisttitle.'"><img src="'.$OUTPUT->pix_url('all','format_folderview').'" class="icon" alt="'.$strtopiclisttitle.'" /></a>';
+    }
+    echo '</div>';
 } else {
-	echo '<div id="topiclinktop" class="topiclistlink"><a href="javascript:void(M.format_folderview.expandSection(\'0\'))" title="'.$strexpandall.'"><img src="'.$OUTPUT->pix_url('t/switch_plus').'" alt="'.$strexpandall.'" /></a> <a href="javascript:void(M.format_folderview.collapseSection(\'0\'))" title="'.$strcollapseall.'"><img src="'.$OUTPUT->pix_url('t/switch_minus').'" alt="'.$strcollapseall.'" /></a></div>';
+    echo '<div id="topiclinktop" class="topiclistlink"><a href="javascript:void(M.format_folderview.expandSection(\'0\'))" title="'.$strexpandall.'"><img src="'.$OUTPUT->pix_url('t/switch_plus').'" alt="'.$strexpandall.'" /></a> <a href="javascript:void(M.format_folderview.collapseSection(\'0\'))" title="'.$strcollapseall.'"><img src="'.$OUTPUT->pix_url('t/switch_minus').'" alt="'.$strcollapseall.'" /></a></div>';
 }
 
 //Make sure user can view the current topic
@@ -215,54 +215,54 @@ if (function_exists('get_section_show')) {
 /******************** Page Title *******************/
 //Write out the page title (and Completion info if topic 0)
 if ($showsection) {
-	if ($thissection->section == 0) {
-    	// Print the Your progress icon if the track completion is enabled
-    	$completioninfo = new completion_info($course);
-    	echo $completioninfo->display_help_icon();
-	}
+    if ($thissection->section == 0) {
+        // Print the Your progress icon if the track completion is enabled
+        $completioninfo = new completion_info($course);
+        echo $completioninfo->display_help_icon();
+    }
 
-	// Output the item header as the page title
-	echo $OUTPUT->heading($strsectionnames[$thissection->section], 2, 'headingblock header outline pagetitle', 'pagetitle');
-	if ($showsubtitle) {
-		echo '<div class="pagesubtitle">'.$sectionweeks[$thissection->section].'</div>';
-	}
+    // Output the item header as the page title
+    echo $OUTPUT->heading($strsectionnames[$thissection->section], 2, 'headingblock header outline pagetitle', 'pagetitle');
+    if ($showsubtitle) {
+        echo '<div class="pagesubtitle">'.$sectionweeks[$thissection->section].'</div>';
+    }
 }
 
 /*********** Action Menu/Editor Dialog **************/
 if ($showsection && $editing) {
 
-	$modtypes = get_course_resource_types($course, $section, $modnames);
+    $modtypes = format_folderview_get_course_resource_types($course, $section, $modnames);
 
     echo '<div id="menuPanel" class="nodialog" style="border-collapse:collapse">';
 
-	// TODO: Make sure we are checking for appropriate capabilities for each action
-	//Action Menu - links for adding content and editing page
-	if (!$screenreader) {
-	    echo '<div id="menuPanelTabs" class="menuPanelTabs">';
-    	if ($isroot && $hascourseupdate) {
-			echo '<span class="tab" id="tab_addTopic"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addTopic\', \'newsection\'));">'.$straddtopic.'</a></span>';
-	    }
-		if ($hasmanageactivities) {
-	    	echo '<span class="tab" id="tab_addResource"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addResource\'));" onclick="document.getElementById(\'selAddToSection\').selectedIndex='.$section.';">'.$straddresource.'</a></span>';
-		}
-		if ($hascourseupdate) {
-	    	echo '<span class="tab" id="tab_addBlock"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addBlock\'));">'.$straddblock.'</a></span>';
-		}
-		if ($hascourseupdate && $ajaxok) {
-	    	echo '<span class="tab" id="tab_editLayout"><a href="javascript:void(M.format_folderview.showMenuPanel(\'editLayout\'));">'.$streditlayout.'</a></span>';
-		}
-		if ($hascourseupdate) {
-	    	echo '<span class="tab" id="tab_editTopic"><a href="editsection.php?id='.$thissection->id.'">'.$strtopicsettings.'</a></span>';
-		}
-	    echo '</div>';
-	} else {
-		if ($hascourseupdate) {
-		    echo '<div class="menuPanelTabs">';
-    		echo '<span class="tab" id="tab_editTopic"><a href="editsection.php?id='.$thissection->id.'">'.$strtopicsettings.'</a></span>';
-	    	echo '</div>';
-		}
-	}
-	// End of Action Menu
+    // TODO: Make sure we are checking for appropriate capabilities for each action
+    //Action Menu - links for adding content and editing page
+    if (!$screenreader) {
+        echo '<div id="menuPanelTabs" class="menuPanelTabs">';
+        if ($isroot && $hascourseupdate) {
+            echo '<span class="tab" id="tab_addTopic"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addTopic\', \'newsection\'));">'.$straddtopic.'</a></span>';
+        }
+        if ($hasmanageactivities) {
+            echo '<span class="tab" id="tab_addResource"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addResource\'));" onclick="document.getElementById(\'selAddToSection\').selectedIndex='.$section.';">'.$straddresource.'</a></span>';
+        }
+        if ($hascourseupdate) {
+            echo '<span class="tab" id="tab_addBlock"><a href="javascript:void(M.format_folderview.showMenuPanel(\'addBlock\'));">'.$straddblock.'</a></span>';
+        }
+        if ($hascourseupdate && $ajaxok) {
+            echo '<span class="tab" id="tab_editLayout"><a href="javascript:void(M.format_folderview.showMenuPanel(\'editLayout\'));">'.$streditlayout.'</a></span>';
+        }
+        if ($hascourseupdate) {
+            echo '<span class="tab" id="tab_editTopic"><a href="editsection.php?id='.$thissection->id.'">'.$strtopicsettings.'</a></span>';
+        }
+        echo '</div>';
+    } else {
+        if ($hascourseupdate) {
+            echo '<div class="menuPanelTabs">';
+            echo '<span class="tab" id="tab_editTopic"><a href="editsection.php?id='.$thissection->id.'">'.$strtopicsettings.'</a></span>';
+            echo '</div>';
+        }
+    }
+    // End of Action Menu
 
     $attributes = array('id' => 'menuPanelDialog');
     if ($screenreader) {
@@ -270,129 +270,129 @@ if ($showsection && $editing) {
     }
     echo html_writer::start_tag('div', $attributes);
 
-	//output the Cancel button for all add dialogs
-	if (!$screenreader) {
-    	echo '<div id="menuPanelClose" style="float:right"><a href="javascript:void(M.format_folderview.hideMenuPanel());" title="'.$strclose.'"><img alt="'.$strclose.'" src="'.$OUTPUT->pix_url('close','format_folderview').'" border="0" /></a></div>';
-	}
+    //output the Cancel button for all add dialogs
+    if (!$screenreader) {
+        echo '<div id="menuPanelClose" style="float:right"><a href="javascript:void(M.format_folderview.hideMenuPanel());" title="'.$strclose.'"><img alt="'.$strclose.'" src="'.$OUTPUT->pix_url('close','format_folderview').'" border="0" /></a></div>';
+    }
 
-	//Add Topic
-	if ($hascourseupdate) {
-		$newsectionnum = $course->numsections + 1;
-	    echo '<div id="addTopic" class="dialog" tabindex="-1">';
-		if ($screenreader) {
-	        echo $OUTPUT->heading($straddtopic, 3, null, 'tab_addTopic');
-		}
-		echo '<form method="GET" action="view.php">';
-	    echo '<input type="hidden" name="id" value="'.$course->id.'" />';
-	    echo '<input type="hidden" name="topic" value="'.$topic.'" />';
-	    echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-	    echo '<input type="hidden" name="newsectionnum" value="'.$newsectionnum.'" />';
-		if ($screenreader) {
-			echo '<div><label for="newsection">'.get_string('sectiontitle', 'format_folderview').'</label></div>';
-		}
-	    echo '<input id="newsection" type="text" size="50" name="newsection" value="" />';
-		echo '<input type="submit" name="addtopic" value="'.$straddtopic.'" />';
-		echo '</form>';
-	    echo '</div>'; //close addTopic
-	}
+    //Add Topic
+    if ($hascourseupdate) {
+        $newsectionnum = $course->numsections + 1;
+        echo '<div id="addTopic" class="dialog" tabindex="-1">';
+        if ($screenreader) {
+            echo $OUTPUT->heading($straddtopic, 3, null, 'tab_addTopic');
+        }
+        echo '<form method="GET" action="view.php">';
+        echo '<input type="hidden" name="id" value="'.$course->id.'" />';
+        echo '<input type="hidden" name="topic" value="'.$topic.'" />';
+        echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
+        echo '<input type="hidden" name="newsectionnum" value="'.$newsectionnum.'" />';
+        if ($screenreader) {
+            echo '<div><label for="newsection">'.get_string('sectiontitle', 'format_folderview').'</label></div>';
+        }
+        echo '<input id="newsection" type="text" size="50" name="newsection" value="" />';
+        echo '<input type="submit" name="addtopic" value="'.$straddtopic.'" />';
+        echo '</form>';
+        echo '</div>'; //close addTopic
+    }
 
-	//Add Resources section
-	if ($hasmanageactivities) {
-    	echo '<div id="addResource" class="dialog" tabindex="-1">';
-		if ($screenreader) {
-	        echo $OUTPUT->heading($straddresource, 3, null, 'tab_addResource');
-		}
-		echo '<form method="GET" action="'.$CFG->wwwroot.'/course/format/folderview/addmod.php">';
-		echo '<input type="hidden" name="id" value="'.$course->id.'" />';
-		echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
+    //Add Resources section
+    if ($hasmanageactivities) {
+        echo '<div id="addResource" class="dialog" tabindex="-1">';
+        if ($screenreader) {
+            echo $OUTPUT->heading($straddresource, 3, null, 'tab_addResource');
+        }
+        echo '<form method="GET" action="'.$CFG->wwwroot.'/course/format/folderview/addmod.php">';
+        echo '<input type="hidden" name="id" value="'.$course->id.'" />';
+        echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
 
-		$fieldsets = array('Activities'=>array(), 'Assignments'=>array(), 'Resources'=>array());
-		$fieldsetcounts = array();
+        $fieldsets = array('Activities'=>array(), 'Assignments'=>array(), 'Resources'=>array());
+        $fieldsetcounts = array();
 
-		foreach ($modtypes as $modkey => $modtype) {
+        foreach ($modtypes as $modkey => $modtype) {
 
-			$name = $modtype->name;
+            $name = $modtype->name;
 
-			$catname = $strresources;
+            $catname = $strresources;
 
-			if ($modtype->isactivity) {
-				$catname = $stractivities;
-			}
+            if ($modtype->isactivity) {
+                $catname = $stractivities;
+            }
 
-			if ($modtype->groupname!='') {
-				$catname = $modtype->groupname;
-			}
+            if ($modtype->groupname!='') {
+                $catname = $modtype->groupname;
+            }
 
-			if (!isset($fieldsets[$catname])) {
-				$fieldsets[$catname] = array();
-			}
-			if (!$screenreader) {
-				$itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="javascript:void(M.format_folderview.addResource(\''.$modtype->type.'\'))" title="'.$modtype->helptext.'"><img src="'.$OUTPUT->pix_url('icon',$modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</a></div>';
-			} else {
-				$itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$OUTPUT->pix_url('icon',$modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</label></div>';
-			}
+            if (!isset($fieldsets[$catname])) {
+                $fieldsets[$catname] = array();
+            }
+            if (!$screenreader) {
+                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="javascript:void(M.format_folderview.addResource(\''.$modtype->type.'\'))" title="'.$modtype->helptext.'"><img src="'.$OUTPUT->pix_url('icon',$modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</a></div>';
+            } else {
+                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$OUTPUT->pix_url('icon',$modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</label></div>';
+            }
 
-			//Add item html its categories array
-			array_push($fieldsets[$catname], $itemhtml);
-		}
+            //Add item html its categories array
+            array_push($fieldsets[$catname], $itemhtml);
+        }
 
-		$output = "";
-		$itemspercol = floor(get_string('itemspercolumn', 'format_folderview'));
-		$numcols = floor(get_string('numberofcolumns', 'format_folderview'));
-		foreach ($fieldsets as $fsname => $fstext) {
-			if (count($fstext)>0) {
-				$totalitems = count($fstext);
-				$colitems = $itemspercol;
-				if ($colitems==0) {
-					$colitems = ceil($totalitems/$numcols);
-				}
-				$output = $output.'<fieldset class="rescat"><legend>'.$fsname.'</legend><div class="column">';
-				foreach ($fstext as $index => $item) {
-					if (($index!=0) and ($index%$colitems == 0)) {
-						$output = $output.'</div><div class="column">';
-					}
-					$output = $output.$item;
-				}
-				$output = $output.'</div><div class="fixfloat"></div></fieldset>';
-			}
-		}
-		echo $output;
+        $output = "";
+        $itemspercol = floor(get_string('itemspercolumn', 'format_folderview'));
+        $numcols = floor(get_string('numberofcolumns', 'format_folderview'));
+        foreach ($fieldsets as $fsname => $fstext) {
+            if (count($fstext)>0) {
+                $totalitems = count($fstext);
+                $colitems = $itemspercol;
+                if ($colitems==0) {
+                    $colitems = ceil($totalitems/$numcols);
+                }
+                $output = $output.'<fieldset class="rescat"><legend>'.$fsname.'</legend><div class="column">';
+                foreach ($fstext as $index => $item) {
+                    if (($index!=0) and ($index%$colitems == 0)) {
+                        $output = $output.'</div><div class="column">';
+                    }
+                    $output = $output.$item;
+                }
+                $output = $output.'</div><div class="fixfloat"></div></fieldset>';
+            }
+        }
+        echo $output;
 
-		//Output topic selector (which defaults to current topic)
-		$currenttopic = '';
-		if ($displaymode == COURSE_LAYOUT_SINGLE) {
-			$currenttopic = " (".get_string('currenttopic', 'format_folderview').")";
-		}
-		echo '<div id="divAddToSection">';
-		echo '<label>'.$straddtotopic.'<br /><select id="selAddToSection" name="section">';
-		foreach ($strsectionnames as $id => $label) {
-			if ($thissection->section == $id) {
-				echo "<option value=\"$id\" selected=\"selected\">$label$currenttopic</option>";
-			} else {
-				echo "<option value=\"$id\">$label</option>";
-			}
-		}
-		echo '</select></label> ';
-		if ($screenreader) {
-			echo '<input type="submit" name="do" value="'.$straddresource.'" />';
-		}
-		echo '</div>';
+        //Output topic selector (which defaults to current topic)
+        $currenttopic = '';
+        if ($displaymode == COURSE_LAYOUT_SINGLE) {
+            $currenttopic = " (".get_string('currenttopic', 'format_folderview').")";
+        }
+        echo '<div id="divAddToSection">';
+        echo '<label>'.$straddtotopic.'<br /><select id="selAddToSection" name="section">';
+        foreach ($strsectionnames as $id => $label) {
+            if ($thissection->section == $id) {
+                echo "<option value=\"$id\" selected=\"selected\">$label$currenttopic</option>";
+            } else {
+                echo "<option value=\"$id\">$label</option>";
+            }
+        }
+        echo '</select></label> ';
+        if ($screenreader) {
+            echo '<input type="submit" name="do" value="'.$straddresource.'" />';
+        }
+        echo '</div>';
 
-	    echo '<div class="fixfloat"></div></form></div>'; //close addResource
-	}
+        echo '<div class="fixfloat"></div></form></div>'; //close addResource
+    }
 
-	//Add Block section
-	if ($hascourseupdate && !$screenreader) {
-	    echo '<div id="addBlock" class="dialog" tabindex="-1">';
-    	echo '</div>'; //close addBlock
-	}
+    //Add Block section
+    if ($hascourseupdate && !$screenreader) {
+        echo '<div id="addBlock" class="dialog" tabindex="-1">';
+        echo '</div>'; //close addBlock
+    }
 
-	//Edit Layout section
-	if ($hascourseupdate && $ajaxok) {
-	    echo '<div id="editLayout" class="dialog" tabindex="-1">';
-		echo '<div>'.get_string('editlayoutdirections', 'format_folderview').'</div>';
-    	echo '</div>'; //close editLayout
-	}
+    //Edit Layout section
+    if ($hascourseupdate && $ajaxok) {
+        echo '<div id="editLayout" class="dialog" tabindex="-1">';
+        echo '<div>'.get_string('editlayoutdirections', 'format_folderview').'</div>';
+        echo '</div>'; //close editLayout
+    }
 
     echo '</div>'; //close dialog content area
     echo '</div>'; //close dialog container
@@ -401,7 +401,7 @@ if ($showsection && $editing) {
 /*********** END of Action Menu/Editor Dialog **************/
 
 if ($screenreader) {
-	echo $OUTPUT->heading(get_string('pagecontent', 'format_folderview'), 3, null, 'pagecontent');
+    echo $OUTPUT->heading(get_string('pagecontent', 'format_folderview'), 3, null, 'pagecontent');
 }
 
 // We always output an unordered list even if we are not listing all topics for interface items such as the clipboard
@@ -425,17 +425,17 @@ if ($showsection) {
         $sectioninfo = false;
     }
     echo '<li id="section-'.$thissection->section.'" class="section main clearfix pagetopic" >';
-	if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
-		echo '<div class="content"><div class="summary">'.get_string('notavailable').'</div></div>';
+    if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
+        echo '<div class="content"><div class="summary">'.get_string('notavailable').'</div></div>';
     } else if ($sectioninfo and !$sectioninfo->uservisible) {
         echo '<div class="content"><div class="summary">'.$sectioninfo->availableinfo.'</div></div>';
-	} else {
-	    echo '<div class="left side"></div>';
-		//Hide the right side items for the page topic section via nodisplay class
-		echo '<div class="right side nodisplay"></div>';
-	    echo '<div class="content">';
+    } else {
+        echo '<div class="left side"></div>';
+        //Hide the right side items for the page topic section via nodisplay class
+        echo '<div class="right side nodisplay"></div>';
+        echo '<div class="content">';
         echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
-	    	echo '<div class="summary">';
+            echo '<div class="summary">';
             if ($thissection->summary) {
                 $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
                 $summaryformatoptions = new stdClass();
@@ -445,10 +445,10 @@ if ($showsection) {
             } else {
                 echo '<div class="fixfloat">&nbsp;</div>';
             }
-	    	echo '</div>';
-		    print_section($course, $thissection, $mods, $modnamesused);
-	    echo '</div>';
-	}
+            echo '</div>';
+            print_section($course, $thissection, $mods, $modnamesused);
+        echo '</div>';
+    }
     echo "</li>\n";
 }
 
@@ -459,7 +459,7 @@ $timenow = time();
 $section = 1;
 $strcollapsedstyle = "";
 if ($displaymode == COURSE_LAYOUT_COLLAPSED) {
-	$strcollapsedstyle = " collapsed";
+    $strcollapsedstyle = " collapsed";
 }
 //Unset Topic 0
 unset($sections['0']);
@@ -470,7 +470,7 @@ while ($section <= $course->numsections) {
     if (!empty($sections[$section])) {
         $thissection = $sections[$section];
     } else {
-		//Maybe change this, do we Really need at least one topic besides topic 0?
+        //Maybe change this, do we Really need at least one topic besides topic 0?
         $thissection = new stdClass;
         $thissection->course  = $course->id;   // Create a new section structure
         $thissection->section = $section;
@@ -489,21 +489,21 @@ while ($section <= $course->numsections) {
 
     $currenttopic = ($thissection->section == $topic);
 
-	if ($showsection) {
+    if ($showsection) {
         $sectionmenu[$section] = $strsectionnames[$section];
-	}
+    }
 
-	if ($listtopics && $showsection) {
+    if ($listtopics && $showsection) {
 
-		$strshowonlytopic = get_string("showonlytopic", "", $section);
-		$linkurl = "view.php?id=$course->id&amp;topic=$section&amp;sesskey=".sesskey();
-		$linktitle = $strshowonlytopic;
-		$folderurl = "javascript:void(M.format_folderview.toggleSection('$section'))";
-		$foldertitle = "$strsectionname $section: $strexpandcollapse";
-		if ($displaymode == COURSE_LAYOUT_SINGLE) {
-			$folderurl = $linkurl;
-			$foldertitle = $linktitle;
-		}
+        $strshowonlytopic = get_string("showonlytopic", "", $section);
+        $linkurl = "view.php?id=$course->id&amp;topic=$section&amp;sesskey=".sesskey();
+        $linktitle = $strshowonlytopic;
+        $folderurl = "javascript:void(M.format_folderview.toggleSection('$section'))";
+        $foldertitle = "$strsectionname $section: $strexpandcollapse";
+        if ($displaymode == COURSE_LAYOUT_SINGLE) {
+            $folderurl = $linkurl;
+            $foldertitle = $linktitle;
+        }
 
         $currenttopic = ($course->marker == $section);
 
@@ -517,30 +517,30 @@ while ($section <= $course->numsections) {
             $sectionstyle = '';
         }
 
-		// TODO: Add logic for expand collapse based on toggle cookie
-		if ($displaymode != COURSE_LAYOUT_EXPANDED) {
-			$strcollapsedstyle = ' collapsed';
-		} else {
-			$strcollapsedstyle = '';
-		}
+        // TODO: Add logic for expand collapse based on toggle cookie
+        if ($displaymode != COURSE_LAYOUT_EXPANDED) {
+            $strcollapsedstyle = ' collapsed';
+        } else {
+            $strcollapsedstyle = '';
+        }
 
         echo '<li id="section-'.$section.'" class="section main clearfix'.$sectionstyle.$strcollapsedstyle.'">';
 
-		echo '<div class="left side">';
-		echo '<div class="topic_bullet">';
-		echo '<a id="folder_link_'.$section.'" href="'.$folderurl.'" title="'.$foldertitle.'" class="folder_link"><img class="folder_icon" src="'.$OUTPUT->pix_url('spacer','format_folderview').'" border="0" alt="'.$section.'." /></a>';
-		echo '</div>'; //topic_bullet
-		echo '</div>'; //left side
+        echo '<div class="left side">';
+        echo '<div class="topic_bullet">';
+        echo '<a id="folder_link_'.$section.'" href="'.$folderurl.'" title="'.$foldertitle.'" class="folder_link"><img class="folder_icon" src="'.$OUTPUT->pix_url('spacer','format_folderview').'" border="0" alt="'.$section.'." /></a>';
+        echo '</div>'; //topic_bullet
+        echo '</div>'; //left side
 
         // Note, 'right side' is BEFORE content.
         echo '<div class="right side">';
-		echo '<div><a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;sesskey='.sesskey().'" title="'.$strshowonlytopic.'">'.
-			'<img src="'.$OUTPUT->pix_url('i/one').'" class="icon" alt="'.$strshowonlytopic.'" /></a></div>';
+        echo '<div><a href="view.php?id='.$course->id.'&amp;topic='.$section.'&amp;sesskey='.sesskey().'" title="'.$strshowonlytopic.'">'.
+            '<img src="'.$OUTPUT->pix_url('i/one').'" class="icon" alt="'.$strshowonlytopic.'" /></a></div>';
         if ($editing && $hascourseupdate) {
-			if ($course->marker == $section) { // Show the "light globe" on/off
-				echo '<div><a href="view.php?id='.$course->id.'&amp;marker=0&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strmarkedthistopic.'">'.'<img src="'.$OUTPUT->pix_url('i/marked') . '" alt="'.$strmarkedthistopic.'" /></a></div>';
+            if ($course->marker == $section) { // Show the "light globe" on/off
+                echo '<div><a href="view.php?id='.$course->id.'&amp;marker=0&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strmarkedthistopic.'">'.'<img src="'.$OUTPUT->pix_url('i/marked') . '" alt="'.$strmarkedthistopic.'" /></a></div>';
             } else {
-				echo '<div><a href="view.php?id='.$course->id.'&amp;marker='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strmarkthistopic.'">'.'<img src="'.$OUTPUT->pix_url('i/marker') . '" alt="'.$strmarkthistopic.'" /></a></div>';
+                echo '<div><a href="view.php?id='.$course->id.'&amp;marker='.$section.'&amp;sesskey='.sesskey().'#section-'.$section.'" title="'.$strmarkthistopic.'">'.'<img src="'.$OUTPUT->pix_url('i/marker') . '" alt="'.$strmarkthistopic.'" /></a></div>';
             }
 
             if ($thissection->visible) {        // Show the hide/show eye
@@ -563,57 +563,57 @@ while ($section <= $course->numsections) {
 
         }
         echo '</div>';
-		/* Have to add new icons in a different right-aligned div because DND wireup is removing them */
-		if ($editing) {
-	        echo '<div class="right side">';
-			if ($editing && $hascourseupdate) {
-				echo "<div><a href=\"editsection.php?id=$thissection->id\" title=\"$strsectionname $section: $strtopicsettings\"><img alt=\"$strsectionname $section: $strtopicsettings\" class=\"icon edit\" hspace=\"2\" src=\"".$OUTPUT->pix_url('t/edit')."\" /></a></div>";
-			}
+        /* Have to add new icons in a different right-aligned div because DND wireup is removing them */
+        if ($editing) {
+            echo '<div class="right side">';
+            if ($editing && $hascourseupdate) {
+                echo "<div><a href=\"editsection.php?id=$thissection->id\" title=\"$strsectionname $section: $strtopicsettings\"><img alt=\"$strsectionname $section: $strtopicsettings\" class=\"icon edit\" hspace=\"2\" src=\"".$OUTPUT->pix_url('t/edit')."\" /></a></div>";
+            }
 
-			echo "<div><a href=\"#tab_addResource\" onclick=\"M.format_folderview.showMenuPanel('addResource');document.getElementById('selAddToSection').selectedIndex=$section;\" title=\"$strsectionname $section: $straddresource\"><img alt=\"$strsectionname $section: $straddresource\" class=\"icon add\" hspace=\"2\" src=\"".$OUTPUT->pix_url('t/add')."\" /></a></div>";
-	        echo '</div>';
-		}
+            echo "<div><a href=\"#tab_addResource\" onclick=\"M.format_folderview.showMenuPanel('addResource');document.getElementById('selAddToSection').selectedIndex=$section;\" title=\"$strsectionname $section: $straddresource\"><img alt=\"$strsectionname $section: $straddresource\" class=\"icon add\" hspace=\"2\" src=\"".$OUTPUT->pix_url('t/add')."\" /></a></div>";
+            echo '</div>';
+        }
 
         echo '<div class="content">';
-		echo $OUTPUT->heading('<a href="'.$linkurl.'" title="'.$linktitle.'">'.$strsectionnames[$thissection->section].'</a>', 3, 'sectionname');
-		if ($showsubtitle) {
-			echo '<div class="sectionsubtitle">'.$sectionweeks[$thissection->section].'</div>';
-		}
-		//Always output content for expand/collapsed, CSS will be used to hide/show contents
-		if ($displaymode != COURSE_LAYOUT_SINGLE) {
+        echo $OUTPUT->heading('<a href="'.$linkurl.'" title="'.$linktitle.'">'.$strsectionnames[$thissection->section].'</a>', 3, 'sectionname');
+        if ($showsubtitle) {
+            echo '<div class="sectionsubtitle">'.$sectionweeks[$thissection->section].'</div>';
+        }
+        //Always output content for expand/collapsed, CSS will be used to hide/show contents
+        if ($displaymode != COURSE_LAYOUT_SINGLE) {
             if (!empty($CFG->enableavailability) and method_exists($modinfo, 'get_section')) {
                 // This can still be false!  Check PHPDoc for more info.
                 $sectioninfo = $modinfo->get_section($thissection->section);
             } else {
                 $sectioninfo = false;
             }
-        	if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
-            	echo '<div class="summary">'.get_string('notavailable').'</div>';
+            if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
+                echo '<div class="summary">'.get_string('notavailable').'</div>';
             } else if ($sectioninfo and !$sectioninfo->uservisible) {
                 echo '<div class="summary">'.$sectioninfo->availableinfo.'</div>';
-			} else {
+            } else {
                 echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
-				echo '<div class="summary">';
-				if ($thissection->summary) {
-					$summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
-					$summaryformatoptions = new stdClass();
-					$summaryformatoptions->noclean = true;
-					$summaryformatoptions->overflowdiv = true;
-					echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
-				} else {
-					echo '<div class="fixfloat">&nbsp;</div>';
-				}
-				echo '</div>'; //summary
-				print_section($course, $thissection, $mods, $modnamesused);
-			}
+                echo '<div class="summary">';
+                if ($thissection->summary) {
+                    $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
+                    $summaryformatoptions = new stdClass();
+                    $summaryformatoptions->noclean = true;
+                    $summaryformatoptions->overflowdiv = true;
+                    echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
+                } else {
+                    echo '<div class="fixfloat">&nbsp;</div>';
+                }
+                echo '</div>'; //summary
+                print_section($course, $thissection, $mods, $modnamesused);
+            }
         }
-		echo '</div>'; //content
-		echo "</li>\n";
-	}
+        echo '</div>'; //content
+        echo "</li>\n";
+    }
 
-	//Remove section from array
+    //Remove section from array
     unset($sections[$section]);
-	//Increment to process next section
+    //Increment to process next section
     $section++;
 }
 
@@ -644,14 +644,14 @@ echo "</ul>\n";
 
 echo '<div>&nbsp;</div>';
 if ($displaymode == COURSE_LAYOUT_SINGLE) {
-	echo '<div id="topiclinkbottom" class="topiclistlink"><a href="view.php?id='.$course->id.'&topic=0&sesskey='.sesskey().'">'.$strtopiclisttitle.'</a></div>';
+    echo '<div id="topiclinkbottom" class="topiclistlink"><a href="view.php?id='.$course->id.'&topic=0&sesskey='.sesskey().'">'.$strtopiclisttitle.'</a></div>';
 }
 if (!empty($sectionmenu)) {
-	$select = new single_select(new moodle_url('/course/view.php?id='.$course->id.'&amp;sesskey='.sesskey(), array('id'=>$course->id)), 'topic', $sectionmenu);
-	$select->label = get_string('jumpto');
-	$select->class = 'jumpmenu';
-	$select->formid = 'sectionmenu';
-	echo $OUTPUT->render($select);
+    $select = new single_select(new moodle_url('/course/view.php?id='.$course->id.'&amp;sesskey='.sesskey(), array('id'=>$course->id)), 'topic', $sectionmenu);
+    $select->label = get_string('jumpto');
+    $select->class = 'jumpmenu';
+    $select->formid = 'sectionmenu';
+    echo $OUTPUT->render($select);
 }
 
 //Include format-specific javascript and initialize it

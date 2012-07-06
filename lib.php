@@ -95,20 +95,20 @@ function callback_folderview_ajax_support() {
  * that are available to given user in given course for given section
  * As it is written, the section only affects the value of the addurl field
  */
-function get_course_resource_types($course, $section, $modnames) {
+function format_folderview_get_course_resource_types($course, $section, $modnames) {
     global $CFG;
 
 
-	$sm = get_string_manager();
-	//Setup Options for string text conversion
-	$formatopt = new stdClass();
-	$formatopt->trusted = false;
-	$formatopt->noclean = false;
-	$formatopt->smiley = false;
-	$formatopt->filter = false;
-	$formatopt->para = true;
-	$formatopt->newlines = false;
-	$formatopt->overflowdiv = false;
+    $sm = get_string_manager();
+    //Setup Options for string text conversion
+    $formatopt = new stdClass();
+    $formatopt->trusted = false;
+    $formatopt->noclean = false;
+    $formatopt->smiley = false;
+    $formatopt->filter = false;
+    $formatopt->para = true;
+    $formatopt->newlines = false;
+    $formatopt->overflowdiv = false;
 
     // check to see if user can add menus
     if (!has_capability('moodle/course:manageactivities', get_context_instance(CONTEXT_COURSE, $course->id))) {
@@ -132,9 +132,9 @@ function get_course_resource_types($course, $section, $modnames) {
         if (function_exists($gettypesfunc)) {
             // NOTE: this is legacy stuff, module subtypes are very strongly discouraged!!
             if ($types = $gettypesfunc()) {
-   	    	    $groupname = null;
+                $groupname = null;
                 foreach($types as $type) {
-	                $menu = new stdClass();
+                    $menu = new stdClass();
                     if ($type->typestr === '--') {
                         continue;
                     }
@@ -144,49 +144,49 @@ function get_course_resource_types($course, $section, $modnames) {
                     }
                     $menu->modname = $modname;
                     $type->type = str_replace('&amp;', '&', $type->type);
-					$menu->type=$type->type;
-					$menu->archetype=$type->modclass;
-					$menu->isactivity = ($type->modclass != MOD_CLASS_RESOURCE);
-					if ($groupname!=null) {
-						$menu->groupname=$groupname;
-					} else {
-						$menu->groupname='';
-					}
-					$menu->name=$type->typestr;
-					$menu->description='';//$type-typestr;
+                    $menu->type=$type->type;
+                    $menu->archetype=$type->modclass;
+                    $menu->isactivity = ($type->modclass != MOD_CLASS_RESOURCE);
+                    if ($groupname!=null) {
+                        $menu->groupname=$groupname;
+                    } else {
+                        $menu->groupname='';
+                    }
+                    $menu->name=$type->typestr;
+                    $menu->description='';//$type-typestr;
                     $menu->addurl=$urlbase.$type->type;
-					$menu->helpurl='';
-					$menu->helptext='';
-					if ($sm->string_exists('modulename_help', $modname)) {
-						$menu->helptext = strip_tags(format_text(get_string('modulename_help', $modname), FORMAT_PLAIN, $formatopt));
-						if ($sm->string_exists('modulename_link', $modname)) {  // Link to further info in Moodle docs
-							$menu->helpurl = get_string('modulename_link', $modname);
-						}
-					}
-					$resources[$modname.':'.$type->type] = $menu;
+                    $menu->helpurl='';
+                    $menu->helptext='';
+                    if ($sm->string_exists('modulename_help', $modname)) {
+                        $menu->helptext = strip_tags(format_text(get_string('modulename_help', $modname), FORMAT_PLAIN, $formatopt));
+                        if ($sm->string_exists('modulename_link', $modname)) {  // Link to further info in Moodle docs
+                            $menu->helpurl = get_string('modulename_link', $modname);
+                        }
+                    }
+                    $resources[$modname.':'.$type->type] = $menu;
                 }
             }
         } else {
             $archetype = plugin_supports('mod', $modname, FEATURE_MOD_ARCHETYPE, MOD_ARCHETYPE_OTHER);
-			$menu = new stdClass();
+            $menu = new stdClass();
             $menu->modname = $modname;
-			$menu->type=$modname;
-			$menu->archetype=$archetype;
-			$menu->isactivity = ($archetype != MOD_ARCHETYPE_RESOURCE);
-			$menu->groupname='';
-			$menu->name=$modnamestr;
-			$menu->description='';//$type-typestr;
-			$menu->addurl=$urlbase.$modname;
-			$menu->helpurl='';
-			$menu->helptext='';
-			if ($sm->string_exists('modulename_help', $modname)) {
-				$menu->helptext = strip_tags(format_text(get_string('modulename_help', $modname), FORMAT_PLAIN, $formatopt));
-				if ($sm->string_exists('modulename_link', $modname)) {  // Link to further info in Moodle docs
-					$menu->helpurl = get_string('modulename_link', $modname);
-				}
-			}
+            $menu->type=$modname;
+            $menu->archetype=$archetype;
+            $menu->isactivity = ($archetype != MOD_ARCHETYPE_RESOURCE);
+            $menu->groupname='';
+            $menu->name=$modnamestr;
+            $menu->description='';//$type-typestr;
+            $menu->addurl=$urlbase.$modname;
+            $menu->helpurl='';
+            $menu->helptext='';
+            if ($sm->string_exists('modulename_help', $modname)) {
+                $menu->helptext = strip_tags(format_text(get_string('modulename_help', $modname), FORMAT_PLAIN, $formatopt));
+                if ($sm->string_exists('modulename_link', $modname)) {  // Link to further info in Moodle docs
+                    $menu->helpurl = get_string('modulename_link', $modname);
+                }
+            }
 
-			$resources[$modname] = $menu;
+            $resources[$modname] = $menu;
         }
     }
     return $resources;
