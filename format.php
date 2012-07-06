@@ -168,33 +168,6 @@ $sectionmenu = array();
 // Add item to section menu list
 $sectionmenu['0'] = $strtopiclisttitle;
 
-//Output CSS required by format
-echo '<style type="text/css"> ';
-
-if ($ajaxok) {
-	//Drag-n-drop CSS
-	echo '.editlayout .draghandle { display:inline; } ';
-	echo '.nodisplay { display:none; } ';
-	echo '.draghandle { float:left; } ';
-	echo '.pagetopic .dragsection { display:none !important; } ';
-	echo '.editlayout .course-content ul.topics li.section .left>div  { float:right; }';
-	echo '.editlayout .course-content ul.topics li.section .left {width:70px;max-width:70px;} ';
-	echo '.editlayout .course-content ul.topics li.section .content {margin-left:70px;} ';
-	echo '.editlayout .right.side { display:none; } ';
-	echo '.right.side>div { margin-bottom:3px; } ';
-	echo '.editlayout .topicmenu { display:none; }';
-    echo '.editing.jsenabled .course-content ul.topics li.section .left div { float:right; }';
-    echo '.editing.jsenabled .course-content ul.topics li.section .left .topic_bullet { padding-right: 5px; }';
-    echo '.editing.jsenabled .course-content ul.topics li.section .left { width: 70px; }';
-}
-
-//Screen reader CSS
-if (!$screenreader) {
-	echo '.dialog { display:none; } ';
-}
-
-echo '</style>';
-
 /******************** Expand All/Collapse All/Topic List *******************/
 if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
 	//Show a link to the topics list if not on the topics list page
@@ -275,7 +248,11 @@ if ($showsection && $editing) {
 	}
 	// End of Action Menu
 
-    echo '<div id="menuPanelDialog">';
+    $attributes = array('id' => 'menuPanelDialog');
+    if ($screenreader) {
+        $attributes['class'] = 'screenreader';
+    }
+    echo html_writer::start_tag('div', $attributes);
 
 	//output the Cancel button for all add dialogs
 	if (!$screenreader) {
@@ -412,7 +389,7 @@ if ($screenreader) {
 }
 
 // We always output an unordered list even if we are not listing all topics for interface items such as the clipboard
-echo "<ul class='topics'>\n";
+echo "<ul class='folderview'>\n";
 
 /// If currently moving a file then show the current clipboard
 if (ismoving($course->id)) {

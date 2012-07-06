@@ -1,3 +1,10 @@
+#page-course-view-folderview .course-content ul.folderview {margin:0;}
+#page-course-view-folderview .course-content ul.folderview li.section {list-style: none;margin:5px 0 0 0;padding:0;}
+#page-course-view-folderview .course-content ul.folderview li.section .content {margin:0 40px;}
+#page-course-view-folderview .course-content ul.folderview li.section .left {width:40px;float:left;text-align:center;}
+#page-course-view-folderview .course-content ul.folderview li.section .right {width:40px;float:right;text-align:center;}
+#page-course-view-folderview .jumpmenu {text-align:center;}
+
 #page-course-view-folderview .topiclistlink { float:right; padding:0.5em 0.5em 0; }
 #page-course-view-folderview #completionprogressid { padding:0.5em 0.5em 0; }
 #page-course-view-folderview .fixfloat { height:1px;overflow:hidden;clear:both; }
@@ -18,33 +25,48 @@ image is used so we can swap state images using CSS */
 #page-course-view-folderview .rescat { float:left;padding:0.25em;margin:0.25em;border-style:none;min-width:34%; }
 #page-course-view-folderview .rescat legend { font-weight:bold; }
 
-#page-course-view-folderview .course-content ul.topics li.section .right.side {float: right; width: auto; }
-#page-course-view-folderview .course-content ul.topics li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
+#page-course-view-folderview .course-content ul.folderview li.section .right.side {float: right; width: auto; }
+#page-course-view-folderview .course-content ul.folderview li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
 #page-course-view-folderview.editing li.activity .commands {z-index:999;display:inline-block;padding:5px;margin:0px 3px;position:absolute;right:0px;top:0px;}
 
-#menuPanelClose { display:block; text-align:right; }
-#menuPanelDialog { border:1px solid; padding:10px; }
-    
-.menuPanelTabs { margin-bottom:-1px; }
-.menuPanelTabs .tab { border-bottom:1px solid; padding: 3px 6px; }
-.nodialog .menuPanelTabs .tab { border:0px none; }
-.nodialog #menuPanelClose { display:none; }
-.nodialog #menuPanelDialog { border:0px none;padding:0px;margin:0px;-moz-border-radius:none; -webkit-border-radius:none; border-radius:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; }
-.dlg_addResource #addResource { display:block; min-height:1em; }
-#addResource .column { float:left; padding-right:1em; }
-#addResource .column .restype { padding:1px 0px; }
-#divAddToSection { clear:both; margin-top:1em; }
-.dlg_addActivity #addActivity { display:block; }
-.dlg_addBlock #addBlock { display:block; }
-.dlg_addTopic #addTopic { display:block; }
-.dlg_editLayout #editLayout { display:block; }
-.dlg_addActivity #tab_addActivity, 
-.dlg_addBlock #tab_addBlock, 
-.dlg_addTopic #tab_addTopic, 
-.dlg_addResource #tab_addResource, 
-.dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  }
-.menuPanelTabs .tab { display:inline-block; }
-.dialog { border:1px solid #999999; padding:0px 1em 1em; margin:1em 0px; }
+#page-course-view-folderview #menuPanelClose { display:block; text-align:right; }
+#page-course-view-folderview #menuPanelDialog { border:1px solid; padding:10px; }
 
-.dragsection img { width:24px; height:24px; }
-.dragactivity img { width:16px; height:16px; }
+#page-course-view-folderview .menuPanelTabs { margin-bottom:-1px; }
+#page-course-view-folderview .menuPanelTabs .tab { border-bottom:1px solid; padding: 3px 6px; }
+#page-course-view-folderview .nodialog .menuPanelTabs .tab { border:0px none; }
+#page-course-view-folderview .nodialog #menuPanelClose { display:none; }
+#page-course-view-folderview .nodialog #menuPanelDialog { border:0px none;padding:0px;margin:0px;-moz-border-radius:none; -webkit-border-radius:none; border-radius:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; }
+#page-course-view-folderview .dlg_addResource #addResource { display:block; min-height:1em; }
+#page-course-view-folderview #addResource .column { float:left; padding-right:1em; }
+#page-course-view-folderview #addResource .column .restype { padding:1px 0px; }
+#page-course-view-folderview #divAddToSection { clear:both; margin-top:1em; }
+#page-course-view-folderview .dlg_addActivity #addActivity { display:block; }
+#page-course-view-folderview .dlg_addBlock #addBlock { display:block; }
+#page-course-view-folderview .dlg_addTopic #addTopic { display:block; }
+#page-course-view-folderview .dlg_editLayout #editLayout { display:block; }
+#page-course-view-folderview .dlg_addActivity #tab_addActivity,
+#page-course-view-folderview .dlg_addBlock #tab_addBlock,
+#page-course-view-folderview .dlg_addTopic #tab_addTopic,
+#page-course-view-folderview .dlg_addResource #tab_addResource,
+#page-course-view-folderview .dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  }
+#page-course-view-folderview .menuPanelTabs .tab { display:inline-block; }
+#page-course-view-folderview .dialog { border:1px solid #999999; padding:0px 1em 1em; margin:1em 0px; }
+
+#page-course-view-folderview .dragsection img { width:24px; height:24px; }
+#page-course-view-folderview .dragactivity img { width:16px; height:16px; }
+
+/* Drag-n-drop CSS */
+#page-course-view-folderview.editing .draghandle { display:inline; }
+#page-course-view-folderview .nodisplay { display:none; }
+#page-course-view-folderview .draghandle { float:left; }
+#page-course-view-folderview .pagetopic .dragsection { display:none !important; }
+#page-course-view-folderview.editing .course-content ul.folderview li.section .left>div  { float:right; }
+#page-course-view-folderview.editing .course-content ul.folderview li.section .left {width:70px;max-width:70px;}
+#page-course-view-folderview.editing .course-content ul.folderview li.section .content {margin-left:70px;}
+#page-course-view-folderview.editing .right.side { display:none; }
+#page-course-view-folderview .right.side>div { margin-bottom:3px; }
+#page-course-view-folderview.editing .topicmenu { display:none; }
+
+#page-course-view-folderview .dialog { display: none; }
+#page-course-view-folderview .screenreader .dialog { display: block; }
