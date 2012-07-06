@@ -306,7 +306,7 @@ if ($showsection && $editing) {
 		if ($screenreader) {
 	        echo $OUTPUT->heading($straddresource, 3, null, 'tab_addResource');
 		}
-		echo '<form method="GET" action="'.$CFG->wwwroot.'/course/mod.php">';
+		echo '<form method="GET" action="'.$CFG->wwwroot.'/course/format/folderview/addmod.php">';
 		echo '<input type="hidden" name="id" value="'.$course->id.'" />';
 		echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
 
