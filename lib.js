@@ -46,7 +46,7 @@ M.format_folderview.hideContextMenu = function () {
 		window.cmenu.style.display = 'none';
 		window.cmenu = null;
 	}
-}
+};
 
 M.format_folderview.toggleMenu = function (el) {
 	var displaystate = el.style.display;
@@ -60,7 +60,7 @@ M.format_folderview.toggleMenu = function (el) {
 	} else {
 		el.style.display = 'none';
 	}
-}
+};
 
 M.format_folderview.showMenuPanel = function (id, focusId) {
 	//first clean up any previous panel
@@ -76,7 +76,7 @@ M.format_folderview.showMenuPanel = function (id, focusId) {
 	if (focusId != null) {
 		try { document.getElementById(focusId).focus(); } catch(e) { }
 	}
-}
+};
 
 M.format_folderview.hideMenuPanel = function (focusId) {
 	var menuPanel = document.getElementById('menuPanel');
@@ -89,11 +89,11 @@ M.format_folderview.hideMenuPanel = function (focusId) {
 	if (focusId != null) {
 		try { document.getElementById(focusId).focus(); } catch(e) { }
 	}
-}
+};
 
 M.format_folderview.addResource = function (resType) {
 	document.location.href='mod.php?id='+escape(format_folderview_vars.courseid)+'&section='+document.getElementById('selAddToSection').selectedIndex+'&add='+resType;
-}
+};
 
 M.format_folderview.toggleSection = function (id, bFocus) {
 	var el = document.getElementById('section-'+id);
@@ -105,7 +105,7 @@ M.format_folderview.toggleSection = function (id, bFocus) {
 			M.format_folderview.expandSection(id, bFocus);
 		}
 	}
-}
+};
 
 M.format_folderview.expandSection = function (id, bFocus, bLoading) {
 	var lis = [0];
@@ -129,7 +129,7 @@ M.format_folderview.expandSection = function (id, bFocus, bLoading) {
 		}
 	}
 	if (!bLoading) { M.format_folderview.saveToggles(); }
-}
+};
 
 M.format_folderview.collapseSection = function (id, bFocus, bLoading) {
 	var lis = [0];
@@ -153,7 +153,7 @@ M.format_folderview.collapseSection = function (id, bFocus, bLoading) {
 		}
 	}
 	if (!bLoading) { M.format_folderview.saveToggles(); }
-}
+};
 
 M.format_folderview.saveToggles = function () {
 	var ck = format_folderview_vars.toggles.join('')+'000000000000000000000000000000000000000000000000000000000000';
@@ -165,7 +165,7 @@ M.format_folderview.saveToggles = function () {
 	}
 	format_folderview_vars.cookie = hex.join('');
 	M.format_folderview.saveCookie();
-}
+};
 
 M.format_folderview.loadToggles = function () {
 	format_folderview_vars.toggles = [];
@@ -185,11 +185,11 @@ M.format_folderview.loadToggles = function () {
 	}
 	//truncate if extra elements
 	format_folderview_vars.toggles.length = format_folderview_vars.numsections+1;
-}
+};
 
 M.format_folderview.saveCookie = function () {
 	YAHOO.util.Cookie.setSub(format_folderview_vars.cookiename,format_folderview_vars.subname, format_folderview_vars.cookie);
-}
+};
 
 M.format_folderview.refreshToggleState = function (bLoading) {
 	for (var x=1; x<format_folderview_vars.toggles.length; x++) {
@@ -199,7 +199,7 @@ M.format_folderview.refreshToggleState = function (bLoading) {
 			M.format_folderview.collapseSection(x, false, bLoading);
 		}
 	}
-}
+};
 
 // Initialise with the information supplied from the course format 'format.php' so we can operate.
 // Args - wwwroot is the URL of the Moodle site, moodleid is the site short name (courseid 0) and courseid is the id of the current course to allow for settings for each course.
@@ -295,7 +295,7 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 
 	//If a hash to a section was passed make sure to expand it
 	if (document.location.hash.indexOf('#section-')==0) {
-		t = document.location.hash.replace('#section-', '');
+		var t = document.location.hash.replace('#section-', '');
 		M.format_folderview.expandSection(t);
 	} else if (!d.hasClass(document.body, 'editing') && marknum>0 && document.location.search.indexOf('topic=')==-1) {
 		M.format_folderview.expandSection(marknum);
@@ -303,5 +303,5 @@ M.format_folderview.init = function (Y, wwwroot, courseid, siteshortname, numsec
 		//document.location.hash = "#section-"+marknum;
 	}
 
-}
+};
 

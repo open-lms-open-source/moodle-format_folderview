@@ -31,13 +31,14 @@ function callback_folderview_uses_sections() {
 }
 
 /**
- * Used to display the course structure for a course where format=topic
+ * Used to display the course structure for a course where format=folderview
  *
  * This is called automatically by {@link load_course()} if the current course
  * format = weeks.
  *
- * @param array $path An array of keys to the course node in the navigation
- * @param stdClass $modinfo The mod info object for the current course
+ * @param global_navigation $navigation
+ * @param stdClass $course
+ * @param navigation_node $coursenode
  * @return bool Returns true
  */
 function callback_folderview_load_content(&$navigation, $course, $coursenode) {
@@ -91,11 +92,11 @@ function callback_folderview_ajax_support() {
 /**
  * Copied from print_section_add_menus
  * Modified to return an associative array of all resources and activities
- * that areavailable to given user in given course for given section
+ * that are available to given user in given course for given section
  * As it is written, the section only affects the value of the addurl field
  */
 function get_course_resource_types($course, $section, $modnames) {
-    global $CFG, $OUTPUT;
+    global $CFG;
 
 
 	$sm = get_string_manager();
@@ -131,7 +132,6 @@ function get_course_resource_types($course, $section, $modnames) {
         if (function_exists($gettypesfunc)) {
             // NOTE: this is legacy stuff, module subtypes are very strongly discouraged!!
             if ($types = $gettypesfunc()) {
-				$atype = null;
    	    	    $groupname = null;
                 foreach($types as $type) {
 	                $menu = new stdClass();
@@ -144,9 +144,6 @@ function get_course_resource_types($course, $section, $modnames) {
                     }
                     $menu->modname = $modname;
                     $type->type = str_replace('&amp;', '&', $type->type);
-                    if ($type->modclass == MOD_CLASS_RESOURCE) {
-                        $atype = MOD_CLASS_RESOURCE;
-                    }
 					$menu->type=$type->type;
 					$menu->archetype=$type->modclass;
 					$menu->isactivity = ($type->modclass != MOD_CLASS_RESOURCE);

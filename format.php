@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG, $OUTPUT, $SITE, $DB, $USER, $PAGE; // For IDE...
+
 require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
@@ -231,7 +233,7 @@ if ($showsection && $editing) {
 
 	$modtypes = get_course_resource_types($course, $section, $modnames);
 
-    echo '<div id="menuPanel" class="nodialog" cellspacing=0 style="border-collapse:collapse">';
+    echo '<div id="menuPanel" class="nodialog" style="border-collapse:collapse">';
 
 	// TODO: Make sure we are checking for appropriate capabilities for each action
 	//Action Menu - links for adding content and editing page

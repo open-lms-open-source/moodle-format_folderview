@@ -44,25 +44,25 @@ image is used so we can swap state images using CSS */
 
 /* Add dialog css */
 #page-course-view-folderview #addBlock .column { float:left;min-width:15%;max-width:33%; }
-#page-course-view-folderview #addBlock .column a { display:block; padding:0.25em 20px 0.25em 0px; }
+#page-course-view-folderview #addBlock .column a { display:block; padding:0.25em 20px 0.25em 0; }
 #page-course-view-folderview .rescat { float:left;padding:0.25em;margin:0.25em;border-style:none;min-width:34%; }
 #page-course-view-folderview .rescat legend { font-weight:bold; }
 
 #page-course-view-folderview .course-content ul.folderview li.section .right.side {float: right; width: auto; }
 #page-course-view-folderview .course-content ul.folderview li.section .right.side > * {display: inline-block; float: right;  padding-right: 1px; padding-top: 1px;}
-#page-course-view-folderview.editing li.activity .commands {z-index:999;display:inline-block;padding:5px;margin:0px 3px;position:absolute;right:0px;top:0px;}
+#page-course-view-folderview.editing li.activity .commands {z-index:999;display:inline-block;padding:5px;margin:0 3px;position:absolute;right:0;top:0;}
 
 #page-course-view-folderview #menuPanelClose { display:block; text-align:right; }
 #page-course-view-folderview #menuPanelDialog { border:1px solid; padding:10px; }
 
 #page-course-view-folderview .menuPanelTabs { margin-bottom:-1px; }
 #page-course-view-folderview .menuPanelTabs .tab { border-bottom:1px solid; padding: 3px 6px; }
-#page-course-view-folderview .nodialog .menuPanelTabs .tab { border:0px none; }
+#page-course-view-folderview .nodialog .menuPanelTabs .tab { border:0 none; }
 #page-course-view-folderview .nodialog #menuPanelClose { display:none; }
-#page-course-view-folderview .nodialog #menuPanelDialog { border:0px none;padding:0px;margin:0px;-moz-border-radius:none; -webkit-border-radius:none; border-radius:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; }
+#page-course-view-folderview .nodialog #menuPanelDialog { border:0 none;padding:0;margin:0;-moz-border-radius:none; -webkit-border-radius:none; border-radius:0;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none; }
 #page-course-view-folderview .dlg_addResource #addResource { display:block; min-height:1em; }
 #page-course-view-folderview #addResource .column { float:left; padding-right:1em; }
-#page-course-view-folderview #addResource .column .restype { padding:1px 0px; }
+#page-course-view-folderview #addResource .column .restype { padding:1px 0; }
 #page-course-view-folderview #divAddToSection { clear:both; margin-top:1em; }
 #page-course-view-folderview .dlg_addActivity #addActivity { display:block; }
 #page-course-view-folderview .dlg_addBlock #addBlock { display:block; }
@@ -74,7 +74,7 @@ image is used so we can swap state images using CSS */
 #page-course-view-folderview .dlg_addResource #tab_addResource,
 #page-course-view-folderview .dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  }
 #page-course-view-folderview .menuPanelTabs .tab { display:inline-block; }
-#page-course-view-folderview .dialog { border:1px solid #999999; padding:0px 1em 1em; margin:1em 0px; }
+#page-course-view-folderview .dialog { padding:0 1em 1em; margin:1em 0; }
 
 #page-course-view-folderview .dragsection img { width:24px; height:24px; }
 #page-course-view-folderview .dragactivity img { width:16px; height:16px; }
