@@ -78,7 +78,7 @@ $ajaxok = (ajaxenabled() && !$screenreader);
 
 //Process New Section Request
 $newsection = optional_param('newsection', null, PARAM_TEXT);
-$newsectionnum = optional_param('newsectionnum', 1, PARAM_INT);
+$newsectionnum = optional_param('newsectionnum', 0, PARAM_INT);
 if ($editing && $hascourseupdate && ($newsectionnum == $course->numsections+1) && confirm_sesskey()) {
 	//fetch and/or create specified section
 	$thissection = get_course_section($newsectionnum, $course->id);
