@@ -87,7 +87,6 @@ image is used so we can swap state images using CSS */
 #page-course-view-folderview.editing.jsenabled .course-content ul.folderview li.section .left>div  { float:right; }
 #page-course-view-folderview.editing.jsenabled .course-content ul.folderview li.section .left {width:70px;max-width:70px;}
 #page-course-view-folderview.editing.jsenabled .course-content ul.folderview li.section .content {margin-left:70px;}
-#page-course-view-folderview.editing.jsenabled .right.side { display:none; }
 #page-course-view-folderview.jsenabled .right.side>div { margin-bottom:3px; }
 #page-course-view-folderview.editing.jsenabled .topicmenu { display:none; }
 
