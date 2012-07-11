@@ -99,7 +99,7 @@ if (($marker >=0) && has_capability('moodle/course:setcurrentsection', $context)
 $topicparam = "";
 
 // TODO: Find a way to let user choose whether to output subtitle with the weekdays so we do not need separate formats for topics and weeks
-$showsubtitle = 1;
+$showsubtitle = 0;
 
 //Determine 'focused' section and persist if changed
 $topic = optional_param('topic', -1, PARAM_INT);
