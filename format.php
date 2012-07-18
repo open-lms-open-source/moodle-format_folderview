@@ -51,7 +51,7 @@ $streditmenu = get_string('editmenu', 'format_folderview');
 $streditsummary = get_string('editsummary');
 $stradd = get_string('add');
 $stractivities = get_string('activities');
-$strshowalltopics = get_string('showalltopics');
+$strshowalltopics = get_string('showalltopics', 'format_folderview');
 $strtopic = get_string('topic');
 $strgroups = get_string('groups');
 $strgroupmy = get_string('groupmy');
@@ -60,8 +60,8 @@ $strmove = get_string('move');
 $editing = $PAGE->user_is_editing();
 
 if ($editing) {
-    $strtopichide = get_string('hidetopicfromothers');
-    $strtopicshow = get_string('showtopicfromothers');
+    $strtopichide = get_string('hidefromothers', 'format_folderview');
+    $strtopicshow = get_string('showfromothers', 'format_folderview');
     $strmarkthistopic = get_string('markthistopic');
     $strmarkedthistopic = get_string('markedthistopic');
     $strmoveup   = get_string('moveup');
@@ -119,12 +119,10 @@ $showsubtitle = 0;
 
 //Determine 'focused' section and persist if changed
 $topic = optional_param('topic', -1, PARAM_INT);
+$displaysection = optional_param('topic', 0, PARAM_INT);
 
 if ($topic != -1) {
-    $displaysection = course_set_display($course->id, $topic);
     $topicparam = "&topic=".$topic;
-} else {
-    $displaysection = course_get_display($course->id, 0);
 }
 $isroot = ($displaysection==0);
 if (!$isroot) {
@@ -206,10 +204,9 @@ if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
 }
 
 //Make sure user can view the current topic
-if (function_exists('get_section_show')) {
-    $showsection = get_section_show($thissection, $modinfo);
-} else {
-    $showsection = true;
+$showsection = true;
+if ($sectioninfo = $modinfo->get_section_info($thissection->section)) {
+    $showsection = $sectioninfo->uservisible;
 }
 
 /******************** Page Title *******************/
@@ -418,12 +415,8 @@ if (ismoving($course->id)) {
 
 /******************** Main Topic Content *******************/
 if ($showsection) {
-    if (!empty($CFG->enableavailability) and method_exists($modinfo, 'get_section')) {
-        // This can still be false!  Check PHPDoc for more info.
-        $sectioninfo = $modinfo->get_section($thissection->section);
-    } else {
-        $sectioninfo = false;
-    }
+    $sectioninfo = $modinfo->get_section_info($thissection->section);
+
     echo '<li id="section-'.$thissection->section.'" class="section main clearfix pagetopic" >';
     if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
         echo '<div class="content"><div class="summary">'.get_string('notavailable').'</div></div>';
@@ -434,8 +427,16 @@ if ($showsection) {
         //Hide the right side items for the page topic section via nodisplay class
         echo '<div class="right side nodisplay"></div>';
         echo '<div class="content">';
-        echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
-            echo '<div class="summary">';
+        if ($sectioninfo and (!$sectioninfo->uservisible || $sectioninfo->availableinfo)) {
+            echo html_writer::start_tag('div', array('class' => 'availabilityinfo'));
+            if (!empty($sectioninfo->availableinfo)) {
+                echo $sectioninfo->availableinfo;
+            } else {
+                echo get_string('notavailable');
+            }
+            echo html_writer::end_tag('div');
+        }
+        echo '<div class="summary">';
             if ($thissection->summary) {
                 $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
                 $summaryformatoptions = new stdClass();
@@ -481,8 +482,9 @@ while ($section <= $course->numsections) {
         $thissection->id = $DB->insert_record('course_sections', $thissection);
     }
 
-    if (function_exists('get_section_show')) {
-        $showsection = get_section_show($thissection, $modinfo);
+    $sectioninfo = $modinfo->get_section_info($section);
+    if ($sectioninfo) {
+        $showsection = $sectioninfo->uservisible;
     } else {
         $showsection = (has_capability('moodle/course:viewhiddensections', $context) or $thissection->visible or !$course->hiddensections);
     }
@@ -495,7 +497,7 @@ while ($section <= $course->numsections) {
 
     if ($listtopics && $showsection) {
 
-        $strshowonlytopic = get_string("showonlytopic", "", $section);
+        $strshowonlytopic = get_string("showonlytopic", "format_folderview", $section);
         $linkurl = "view.php?id=$course->id&amp;topic=$section&amp;sesskey=".sesskey();
         $linktitle = $strshowonlytopic;
         $folderurl = "javascript:void(M.format_folderview.toggleSection('$section'))";
@@ -512,7 +514,7 @@ while ($section <= $course->numsections) {
             $sectionstyle = ' hidden';
         } else if ($currenttopic) {
             $sectionstyle = ' current';
-            $currenttext = get_accesshide(get_string('currenttopic','access'));
+            $currenttext = get_accesshide(get_string('currenttopic','format_folderview'));
         } else {
             $sectionstyle = '';
         }
@@ -581,18 +583,20 @@ while ($section <= $course->numsections) {
         }
         //Always output content for expand/collapsed, CSS will be used to hide/show contents
         if ($displaymode != COURSE_LAYOUT_SINGLE) {
-            if (!empty($CFG->enableavailability) and method_exists($modinfo, 'get_section')) {
-                // This can still be false!  Check PHPDoc for more info.
-                $sectioninfo = $modinfo->get_section($thissection->section);
-            } else {
-                $sectioninfo = false;
-            }
             if (!$hasviewhiddensections and !$thissection->visible) {   // Hidden for students
                 echo '<div class="summary">'.get_string('notavailable').'</div>';
             } else if ($sectioninfo and !$sectioninfo->uservisible) {
                 echo '<div class="summary">'.$sectioninfo->availableinfo.'</div>';
             } else {
-                echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
+                if ($sectioninfo and (!$sectioninfo->uservisible || $sectioninfo->availableinfo)) {
+                    echo html_writer::start_tag('div', array('class' => 'availabilityinfo'));
+                    if (!empty($sectioninfo->availableinfo)) {
+                        echo $sectioninfo->availableinfo;
+                    } else {
+                        echo get_string('notavailable');
+                    }
+                    echo html_writer::end_tag('div');
+                }
                 echo '<div class="summary">';
                 if ($thissection->summary) {
                     $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);

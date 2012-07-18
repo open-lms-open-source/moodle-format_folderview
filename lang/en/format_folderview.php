@@ -54,3 +54,10 @@ $string['section0name'] = 'Topic list';
 $string['sectiontitle'] = 'Topic Name';
 $string['topicsettings'] = 'Topic Settings';
 $string['viewall'] = 'View All';
+$string['hidefromothers'] = 'Hide topic';
+$string['showfromothers'] = 'Show topic';
+
+// These are core strings copied to here for the 2.3 upgrade, should be removed after refactor
+$string['showalltopics'] = 'Show all topics';
+$string['showonlytopic'] = 'Show only topic {$a}';
+$string['currenttopic'] = 'This topic';
