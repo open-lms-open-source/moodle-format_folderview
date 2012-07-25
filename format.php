@@ -217,7 +217,11 @@ if ($displaymode == COURSE_LAYOUT_SINGLE && $topic != 0) {
 }
 
 //Make sure user can view the current topic
-$showsection = get_section_show($thissection, $modinfo);
+if (function_exists('get_section_show')) {
+    $showsection = get_section_show($thissection, $modinfo);
+} else {
+    $showsection = true;
+}
 
 /******************** Page Title *******************/
 //Write out the page title (and Completion info if topic 0)
@@ -421,7 +425,7 @@ if (ismoving($course->id)) {
 
 /******************** Main Topic Content *******************/
 if ($showsection) {
-    if (!empty($CFG->enableavailability)) {
+    if (!empty($CFG->enableavailability) and method_exists($modinfo, 'get_section')) {
         // This can still be false!  Check PHPDoc for more info.
         $sectioninfo = $modinfo->get_section($thissection->section);
     } else {
@@ -437,7 +441,7 @@ if ($showsection) {
 		//Hide the right side items for the page topic section via nodisplay class
 		echo '<div class="right side nodisplay"></div>';
 	    echo '<div class="content">';
-        echo get_section_full_availability_info($thissection, $modinfo);
+        echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
 	    	echo '<div class="summary">';
             if ($thissection->summary) {
                 $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
@@ -484,7 +488,11 @@ while ($section <= $course->numsections) {
         $thissection->id = $DB->insert_record('course_sections', $thissection);
     }
 
-	$showsection = get_section_show($thissection, $modinfo);
+    if (function_exists('get_section_show')) {
+        $showsection = get_section_show($thissection, $modinfo);
+    } else {
+        $showsection = (has_capability('moodle/course:viewhiddensections', $context) or $thissection->visible or !$course->hiddensections);
+    }
 
     $currenttopic = ($thissection->section == $topic);
 
@@ -580,7 +588,7 @@ while ($section <= $course->numsections) {
 		}
 		//Always output content for expand/collapsed, CSS will be used to hide/show contents
 		if ($displaymode != COURSE_LAYOUT_SINGLE) {
-            if (!empty($CFG->enableavailability)) {
+            if (!empty($CFG->enableavailability) and method_exists($modinfo, 'get_section')) {
                 // This can still be false!  Check PHPDoc for more info.
                 $sectioninfo = $modinfo->get_section($thissection->section);
             } else {
@@ -591,7 +599,7 @@ while ($section <= $course->numsections) {
             } else if ($sectioninfo and !$sectioninfo->uservisible) {
                 echo '<div class="summary">'.$sectioninfo->availableinfo.'</div>';
 			} else {
-                echo get_section_full_availability_info($thissection, $modinfo);
+                echo (function_exists('get_section_full_availability_info')) ? get_section_full_availability_info($thissection, $modinfo) : '';
 				echo '<div class="summary">';
 				if ($thissection->summary) {
 					$summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
