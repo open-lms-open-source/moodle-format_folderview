@@ -31,22 +31,18 @@
 $string['activities'] = 'Activities';
 $string['addblock'] = 'Add Block';
 $string['addresource'] = 'Add Resource';
+$string['sectionaddresource'] = 'Add resource to {$a}';
 $string['addtopic'] = 'Add Topic';
 $string['addtotopic'] = 'Add To';
 $string['close'] = 'Close';
 $string['collapseall'] = 'Collapse All';
-$string['currenttopic'] = 'current topic';
-$string['display'] = 'Display';
-$string['done'] = 'Done';
-$string['editlayout'] = 'Edit Layout';
-$string['editlayoutdirections'] = 'Directions: Use the move icons to move topics and resources to the desired locations. Some large areas of text may appear shortened to make it easier to drag contents. When you exit layout the text will display normally.';
-$string['editmenu'] = 'Edit Menu';
+$string['currentsection'] = 'Current topic';
 $string['expand'] = 'Expand';
 $string['expandall'] = 'Expand All';
-$string['expandcollapse'] = 'Expand/Collapse';
+$string['sectionexpandcollapse'] = 'Expand/Collapse {$a}';
+$string['sectionnotavailable'] = '{$a} is not available';
 $string['itemspercolumn'] = '15';
 $string['numberofcolumns'] = '1';
-$string['pagecontent'] = 'Page Content';
 $string['pluginname'] = 'Folder View format';
 $string['resources'] = 'Resources';
 $string['sectionname'] = 'Topic';
@@ -56,8 +52,6 @@ $string['topicsettings'] = 'Topic Settings';
 $string['viewall'] = 'View All';
 $string['hidefromothers'] = 'Hide topic';
 $string['showfromothers'] = 'Show topic';
-
-// These are core strings copied to here for the 2.3 upgrade, should be removed after refactor
 $string['showalltopics'] = 'Show all topics';
 $string['showonlytopic'] = 'Show only topic {$a}';
 $string['currenttopic'] = 'This topic';

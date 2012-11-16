@@ -23,27 +23,28 @@
  */
 
 /**
- * Construct an add module URL from the folderview add
- * activity form.  This is used when screen reader and the
- * like are used.
+ * Add a new course section
  *
  * @author Mark Nielsen
  * @package format_folderview
  */
 
 require_once(dirname(dirname(dirname(__DIR__))).'/config.php');
+require_once($CFG->dirroot.'/course/lib.php');
 
-$courseid = required_param('id', PARAM_INT);
-$add      = required_param('add', PARAM_TEXT);
-$section  = required_param('section', PARAM_INT);
-$context  = context_course::instance($courseid);
+$courseid   = required_param('courseid', PARAM_INT);
+$sectioname = required_param('newsection', PARAM_TEXT);
+$context    = context_course::instance($courseid);
 
 require_login($courseid, false, null, false, true);
-require_capability('moodle/course:manageactivities', $context);
+has_capability('moodle/course:update', $context);
 require_sesskey();
 
-redirect(new moodle_url('/course/mod.php?add='.$add, array(
-    'id'      => $courseid,
-    'section' => $section,
-    'sesskey' => sesskey(),
-)));
+$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course->numsections++;
+
+$section = get_course_section($course->numsections, $course->id);
+$DB->set_field('course_sections', 'name', $sectioname, array('id' => $section->id));
+$DB->set_field('course', 'numsections', $course->numsections, array('id' => $course->id));
+
+redirect(course_get_url($course, $section->section));
