@@ -8,7 +8,10 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
             ADDRESOURCE: 'li.section .right .add',
             SECTIONROOT: 'ul.folderview',
             ADDRESOURCESELECTOR: '#selAddToSection',
-            ADDRESOURCETAB: '#tab_addResource'
+            ADDRESOURCETAB: '#tab_addResource',
+            ADDRESOURCEDIALOG: '#addResource',
+            ADDRESOURCELINK: '.restype a',
+            ADDRESOURCEHIDDEN: '#addResourceHidden'
         };
 
         var MENUNAME = 'format_folderview_menu';
@@ -29,7 +32,11 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                     }
                     var rootNode = Y.one(CSS.SECTIONROOT);
                     if (rootNode) {
-                        rootNode.delegate('click', this.handle_add_resource, CSS.ADDRESOURCE, this);
+                        rootNode.delegate('click', this.handle_show_add_resource, CSS.ADDRESOURCE, this);
+                    }
+                    var resourceNode = Y.one(CSS.ADDRESOURCEDIALOG);
+                    if (resourceNode) {
+                        resourceNode.delegate('click', this.handle_add_resource, CSS.ADDRESOURCELINK, this);
                     }
                 },
 
@@ -46,10 +53,24 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                  * Handle section widget add resource click
                  * @param e
                  */
-                handle_add_resource: function(e) {
+                handle_show_add_resource: function(e) {
                     var section = e.target.ancestor('li.section');
                     Y.one(CSS.ADDRESOURCESELECTOR).set('value', this.get_section_number(section));
                     this.show_menu_panel(Y.one(CSS.ADDRESOURCETAB));
+                },
+
+                /**
+                 * Handle adding an actual resource from the "Add Resource" dialog
+                 * @param e
+                 */
+                handle_add_resource: function(e) {
+                    e.preventDefault();
+
+                    Y.one(CSS.ADDRESOURCEHIDDEN).set(
+                        'value',
+                        e.target.get('id').replace('add_mod_', '')
+                    );
+                    e.target.ancestor('form').submit();
                 },
 
                 /**

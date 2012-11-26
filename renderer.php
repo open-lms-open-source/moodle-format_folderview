@@ -371,6 +371,10 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo '<input type="hidden" name="id" value="'.$course->id.'" />';
         echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
 
+        if (!$screenreader) {
+            echo '<input id="addResourceHidden" type="hidden" name="add" value="" />';
+        }
+
         $fieldsets = array('Activities' => array(), 'Assignments' => array(), 'Resources' => array());
 
         foreach ($modtypes as $modkey => $modtype) {
@@ -388,9 +392,9 @@ class format_folderview_renderer extends format_section_renderer_base {
                 $fieldsets[$catname] = array();
             }
             if (!$screenreader) {
-                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="javascript:void(M.format_folderview.addResource(\''.$modtype->type.'\'))" title="'.$modtype->helptext.'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</a></div>';
+                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.s($name).'" border="0" hspace="2" />'.$name.'</a></div>';
             } else {
-                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.$name.'" border="0" hspace="2" />'.$name.'</label></div>';
+                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.s($name).'" border="0" hspace="2" />'.$name.'</label></div>';
             }
             //Add item html its categories array
             array_push($fieldsets[$catname], $itemhtml);
