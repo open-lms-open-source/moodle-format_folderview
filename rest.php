@@ -32,7 +32,10 @@ $courseid         = required_param('courseid', PARAM_INT);
 $action           = required_param('action', PARAM_ACTION);
 $expandedsections = optional_param('expandedsections', '', PARAM_SEQUENCE);
 
-$PAGE->set_url('/course/rest.php', array('courseid' => $courseid));
+$PAGE->set_url(
+    '/course/format/folderview/rest.php',
+    array('courseid' => $courseid, 'action' => $action)
+);
 
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $coursecontext = context_course::instance($course->id);
