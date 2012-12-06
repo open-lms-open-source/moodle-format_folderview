@@ -2,6 +2,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
         var CSS = {
             MAINWRAPPER: '.course-content ul.folderview',
             ALLSECTIONS: '.course-content ul.folderview li.section',
+            SECTION: 'li.section',
             SECTIONACTIVITIES: 'ul.section',
             SECTIONSUMMARY: '.summary',
             TOGGLETARGET: 'img.folder_icon',
@@ -37,6 +38,10 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     if (collapseNode) {
                         collapseNode.on('click', this.handle_collapse_all, this);
                     }
+                    var sections = Y.all(CSS.ALLSECTIONS);
+                    if (!sections.isEmpty()) {
+                        sections.on('drop', this.handle_drop, this);
+                    }
                 },
 
                 /**
@@ -45,7 +50,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                  */
                 handle_section_toggle: function(e) {
                     e.preventDefault();
-                    this.toggle_section_classes(e.target.ancestor('li.section'));
+                    this.toggle_section_classes(e.target.ancestor(CSS.SECTION));
                     this.save_expanded_sections();
                 },
 
@@ -77,6 +82,30 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     }, this);
 
                     this.save_expanded_sections();
+                },
+
+                /**
+                 * A file was dropped on a section, expand it
+                 * @param e
+                 */
+                handle_drop: function(e) {
+                    var section = e.currentTarget;
+                    if (!section.test(CSS.SECTION)) {
+                        section = section.ancestor(CSS.SECTION);
+                    }
+                    if (section) {
+                        if (!section.hasClass('expanded')) {
+                            this.toggle_section_classes(section);
+                            this.save_expanded_sections();
+                        } else {
+                            // Bug fix - this element can be created dynamically when
+                            // the section is empty, add our precious class...
+                            var activities = section.one(CSS.SECTIONACTIVITIES);
+                            if (activities && !activities.hasClass('expanded')) {
+                                activities.addClass('expanded');
+                            }
+                        }
+                    }
                 },
 
                 /**
