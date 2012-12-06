@@ -85,14 +85,27 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                  */
                 toggle_section_classes: function(node) {
                     if (node) {
+                        // Only trust section's class
+                        var addClass = true;
+                        if (node.hasClass('expanded')) {
+                            addClass = false;
+                        }
                         node.toggleClass('expanded');
                         var activities = node.one(CSS.SECTIONACTIVITIES);
                         var summary    = node.one(CSS.SECTIONSUMMARY);
                         if (activities) {
-                            activities.toggleClass('expanded');
+                            if (addClass) {
+                                activities.addClass('expanded');
+                            } else {
+                                activities.removeClass('expanded');
+                            }
                         }
                         if (summary) {
-                            summary.toggleClass('expanded');
+                            if (addClass) {
+                                summary.addClass('expanded');
+                            } else {
+                                summary.removeClass('expanded');
+                            }
                         }
                     } else {
                         this.log('Section node does not exist');

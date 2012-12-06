@@ -51,6 +51,8 @@
 
 .course-content ul.folderview li.section .summary.expanded,
 .course-content ul.folderview li.section ul.section.expanded,
+.course-content ul.folderview li.section.expanded ul.section, /* Backup CSS */
+.course-content ul.folderview li.section.expanded .summary, /* Backup CSS */
 .course-content .single-section ul.folderview li.section .summary,
 .course-content .single-section ul.folderview li.section ul.section,
 .course-content ul.folderview #section-0 .summary,
