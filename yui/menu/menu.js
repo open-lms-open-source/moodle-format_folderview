@@ -55,8 +55,8 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                  */
                 handle_show_add_resource: function(e) {
                     var section = e.target.ancestor('li.section');
-                    Y.one(CSS.ADDRESOURCESELECTOR).set('value', this.get_section_number(section));
                     this.show_menu_panel(Y.one(CSS.ADDRESOURCETAB));
+                    Y.one(CSS.ADDRESOURCESELECTOR).set('value', this.get_section_number(section));
                 },
 
                 /**
