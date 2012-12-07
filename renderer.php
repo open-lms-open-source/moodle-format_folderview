@@ -217,7 +217,7 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         $sectionmenu = array();
         foreach ($sections as $section) {
-            if ($section->uservisible) {
+            if ($section->uservisible and $section->section != 0) {
                 $sectionmenu[$section->section] = get_section_name($course, $section);
             }
         }
