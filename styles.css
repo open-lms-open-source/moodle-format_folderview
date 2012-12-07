@@ -159,6 +159,12 @@
     max-width: 70px;
 }
 
+/* Single section view, the view all icon in the top */
+#page-course-view-folderview .single-section .topiclistlink {
+    float: right;
+    padding: 0.5em 0.5em 0;
+}
+
 /* All tab/panel CSS */
 #page-course-view-folderview #menuPanelClose { display:block; text-align:right; }
 #page-course-view-folderview #menuPanelDialog { border:1px solid; padding:10px; }
