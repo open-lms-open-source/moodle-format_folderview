@@ -94,7 +94,14 @@ class format_folderview_renderer extends format_section_renderer_base {
     protected function section_edit_controls($course, $section, $onsectionpage = false) {
         global $PAGE;
 
+        $title      = get_string('showonlytopic', 'format_folderview', get_section_name($course, $section));
+        $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
+        $onesection = html_writer::link(course_get_url($course, $section->section, array('sr' => $section->section)), $img, array('title' => $title));
+
         if (!$PAGE->user_is_editing()) {
+            if (!$onsectionpage) {
+                return array($onesection);
+            }
             return array();
         }
 
@@ -111,7 +118,7 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
             $title      = get_string('sectionaddresource', 'format_folderview', get_section_name($course, $section));
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => get_string('edit')));
+            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
             $controls[] = html_writer::link('#tab_addResource', $img, array('title' => $title));
         }
         if (has_capability('moodle/course:update', $coursecontext)) {
@@ -129,6 +136,9 @@ class format_folderview_renderer extends format_section_renderer_base {
                 $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'), 'class' => 'icon', 'alt' => get_string('markthistopic')));
                 $controls[] = html_writer::link($url, $img, array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
             }
+        }
+        if (!$onsectionpage) {
+            $controls[] = $onesection;
         }
 
         return array_reverse(
