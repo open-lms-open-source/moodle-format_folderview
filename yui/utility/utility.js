@@ -19,9 +19,17 @@ YUI.add('moodle-format_folderview-utility', function(Y) {
                     // to 'available' event handler
                     var callback = this.reposition_move_widgets;
                     Y.on('drop', function() {
-                        Y.once('available', function() {
-                            callback();
-                        }, CSS.EDITINGMOVESELECTOR, Y);
+                        var fixOnAvailable = function() {
+                            Y.on('available', function() {
+                                callback();
+
+                                if (!Y.all('.dndupload-progress-outer').isEmpty()) {
+                                    setTimeout(fixOnAvailable, 10);
+                                }
+                            }, CSS.EDITINGMOVESELECTOR, Y);
+                        };
+                        fixOnAvailable();
+
                     }, CSS.SECTIONS);
                 },
 
