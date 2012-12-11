@@ -56,7 +56,17 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                 handle_show_add_resource: function(e) {
                     var section = e.target.ancestor('li.section');
                     this.show_menu_panel(Y.one(CSS.ADDRESOURCETAB));
-                    Y.one(CSS.ADDRESOURCESELECTOR).set('value', this.get_section_number(section));
+
+                    // IE needs this verbose processing for it to update
+                    // Will be fixed with http://yuilibrary.com/projects/yui3/ticket/2528084
+                    var sectionnum = this.get_section_number(section);
+                    Y.all(CSS.ADDRESOURCESELECTOR + ' option').each(function(option) {
+                        if (option.get('value') == sectionnum) {
+                            option.set('selected', true);
+                        } else {
+                            option.set('selected', false);
+                        }
+                    });
                 },
 
                 /**
