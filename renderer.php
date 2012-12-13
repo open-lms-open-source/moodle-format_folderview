@@ -147,11 +147,14 @@ class format_folderview_renderer extends format_section_renderer_base {
     }
 
     public function print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused) {
+        $courseclone = clone($course);
+        $courseclone->coursedisplay = COURSE_DISPLAY_SINGLEPAGE;
+
         echo html_writer::start_tag('div', array('class' => 'multi-section'));
         echo $this->all_sections_visibility_toggles();
-        echo $this->output->heading(get_section_name($course, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
-        $this->action_menu($course, $sections[0], $sections, $modnames);
-        parent::print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused);
+        echo $this->output->heading(get_section_name($courseclone, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
+        $this->action_menu($courseclone, $sections[0], $sections, $modnames);
+        parent::print_multiple_section_page($courseclone, $sections, $mods, $modnames, $modnamesused);
         echo html_writer::end_tag('div');
     }
 
