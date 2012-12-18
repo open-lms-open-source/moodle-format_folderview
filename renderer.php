@@ -494,7 +494,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
         echo '</select></label> ';
         if ($screenreader) {
-            echo '<input type="submit" name="do" value="'.$straddresource.'" />';
+            echo '<input type="submit" name="do" id="addResourceButton" value="'.$straddresource.'" />';
         }
         echo '</div>';
 

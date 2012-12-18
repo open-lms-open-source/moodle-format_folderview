@@ -11,7 +11,9 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
             ADDRESOURCETAB: '#tab_addResource',
             ADDRESOURCEDIALOG: '#addResource',
             ADDRESOURCELINK: '.restype a',
-            ADDRESOURCEHIDDEN: '#addResourceHidden'
+            ADDRESOURCEHIDDEN: '#addResourceHidden',
+            ADDRESOURCEBUTTON: '#addResourceButton',
+            ADDRESOURCERADIO: 'input[type=radio][name=add]'
         };
 
         var MENUNAME = 'format_folderview_menu';
@@ -37,6 +39,12 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                     var resourceNode = Y.one(CSS.ADDRESOURCEDIALOG);
                     if (resourceNode) {
                         resourceNode.delegate('click', this.handle_add_resource, CSS.ADDRESOURCELINK, this);
+
+                        var resourceButton = Y.one(CSS.ADDRESOURCEBUTTON);
+                        if (resourceButton) {
+                            resourceButton.set('disabled', true);
+                            resourceNode.delegate('change', this.handle_add_resource_radio, CSS.ADDRESOURCERADIO, this);
+                        }
                     }
                 },
 
@@ -81,6 +89,17 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                         e.target.get('id').replace('add_mod_', '')
                     );
                     e.target.ancestor('form').submit();
+                },
+
+                /**
+                 * Handle a radio button selection from the "Add Resource" dialog
+                 */
+                handle_add_resource_radio: function() {
+                    if (Y.one(CSS.ADDRESOURCERADIO + ':checked')) {
+                        Y.one(CSS.ADDRESOURCEBUTTON).set('disabled', false);
+                    } else {
+                        Y.one(CSS.ADDRESOURCEBUTTON).set('disabled', true);
+                    }
                 },
 
                 /**
