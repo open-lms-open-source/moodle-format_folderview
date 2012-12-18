@@ -65,9 +65,11 @@ class format_folderview_renderer extends format_section_renderer_base {
 
     public function section_title($section, $course) {
         $title = get_section_name($course, $section);
-        $url   = course_get_url($course, $section->section, array('sr' => $section->section));
-        if ($url) {
-            $title = html_writer::link($url, $title);
+        if ($section->uservisible) {
+            $url = course_get_url($course, $section->section, array('sr' => $section->section));
+            if ($url) {
+                $title = html_writer::link($url, $title);
+            }
         }
         return $title;
     }
@@ -94,12 +96,15 @@ class format_folderview_renderer extends format_section_renderer_base {
     protected function section_edit_controls($course, $section, $onsectionpage = false) {
         global $PAGE;
 
-        $title      = get_string('showonlytopic', 'format_folderview', get_section_name($course, $section));
-        $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
-        $onesection = html_writer::link(course_get_url($course, $section->section, array('sr' => $section->section)), $img, array('title' => $title));
-
+        if ($section->uservisible) {
+            $title      = get_string('showonlytopic', 'format_folderview', get_section_name($course, $section));
+            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
+            $onesection = html_writer::link(course_get_url($course, $section->section, array('sr' => $section->section)), $img, array('title' => $title));
+        } else {
+            $onesection = '';
+        }
         if (!$PAGE->user_is_editing()) {
-            if (!$onsectionpage) {
+            if (!$onsectionpage and !empty($onesection)) {
                 return array($onesection);
             }
             return array();
@@ -137,7 +142,7 @@ class format_folderview_renderer extends format_section_renderer_base {
                 $controls[] = html_writer::link($url, $img, array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
             }
         }
-        if (!$onsectionpage) {
+        if (!$onsectionpage and !empty($onesection)) {
             $controls[] = $onesection;
         }
 
