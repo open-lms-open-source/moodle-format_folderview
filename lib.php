@@ -90,6 +90,23 @@ function callback_folderview_ajax_support() {
 }
 
 /**
+ * Course deletion
+ *
+ * @param $courseid
+ * @param bool $showfeedback
+ */
+function format_folderview_delete_course($courseid, $showfeedback = false) {
+    global $DB, $OUTPUT;
+
+    $DB->delete_records('format_folderview_display', array('course' => $courseid));
+    $DB->delete_records('user_preferences', array('name' => "format_folderview_$courseid"));
+
+    if ($showfeedback) {
+        echo $OUTPUT->notification(get_string('deletecoursedone', 'format_folderview'), 'notifysuccess');
+    }
+}
+
+/**
  * Copied from print_section_add_menus
  * Modified to return an associative array of all resources and activities
  * that are available to given user in given course for given section
@@ -97,7 +114,6 @@ function callback_folderview_ajax_support() {
  */
 function format_folderview_get_course_resource_types($course, $section, $modnames) {
     global $CFG;
-
 
     $sm = get_string_manager();
     //Setup Options for string text conversion
@@ -192,3 +208,92 @@ function format_folderview_get_course_resource_types($course, $section, $modname
     return $resources;
 }
 
+/**
+ * Display the section that the user was last viewing
+ *
+ * @param stdClass $course
+ * @param int $currentsection The current section number to be displayed
+ */
+function format_folderview_display_section($course, $currentsection) {
+    global $DB;
+
+    $section   = optional_param('section', -1, PARAM_INT);
+    $sectionid = optional_param('sectionid', 0, PARAM_INT);
+    if ($sectionid) {
+        $section = $DB->get_field('course_sections', 'section', array('id' => $sectionid, 'course' => $course->id), MUST_EXIST);
+    }
+    if ($section != -1) {
+        $section = format_folderview_course_set_display($course->id, $section);
+    } else {
+        $section = format_folderview_course_get_display($course->id);
+    }
+    if ($section != $currentsection) {
+        redirect(new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section)));
+    }
+}
+
+/**
+ * Restore course_get_display() method.
+ *
+ * Returns the course section to display or 0 meaning show all sections. Returns 0 for guests.
+ * It also sets the $USER->display cache to array($courseid=>return value)
+ *
+ * @param int $courseid The course id
+ * @return int Course section to display, 0 means all
+ */
+function format_folderview_course_get_display($courseid) {
+    global $USER, $DB;
+
+    $display = 0;
+
+    if (!isset($USER->display[$courseid])) {
+        if (isloggedin() and !isguestuser()) {
+            if (!$display = $DB->get_field('format_folderview_display', 'display', array('userid' => $USER->id, 'course' => $courseid))) {
+                $display = 0; // all sections option is not stored in DB, this makes the table much smaller
+            }
+        }
+        //use display cache for one course only - we need to keep session small
+        $USER->display = array($courseid => $display);
+    }
+
+    return $USER->display[$courseid];
+}
+
+/**
+ * Restore course_set_display() method.
+ *
+ * Show one section only or all sections.
+ *
+ * @param int $courseid The course id
+ * @param mixed $display show only this section, 0 or 'all' means show all sections
+ * @return int Course section to display, 0 means all
+ */
+function format_folderview_course_set_display($courseid, $display) {
+    global $USER, $DB;
+
+    if ($display === 'all' or empty($display)) {
+        $display = 0;
+    }
+    if (isloggedin() and !isguestuser()) {
+        if ($display == 0) {
+            //show all, do not store anything in database
+            $DB->delete_records('format_folderview_display', array('userid' => $USER->id, 'course' => $courseid));
+
+        } else {
+            if ($DB->record_exists('format_folderview_display', array('userid' => $USER->id, 'course' => $courseid))) {
+                $DB->set_field('format_folderview_display', 'display', $display, array('userid' => $USER->id, 'course' => $courseid));
+            } else {
+                $record          = new stdClass();
+                $record->userid  = $USER->id;
+                $record->course  = $courseid;
+                $record->display = $display;
+                $DB->insert_record('format_folderview_display', $record);
+            }
+        }
+    }
+
+    //use display cache for one course only - we need to keep session small
+    $USER->display = array($courseid => $display);
+
+    return $display;
+}

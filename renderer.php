@@ -197,7 +197,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo html_writer::start_tag('div', array('class' => 'single-section'));
 
         $viewallicon = $this->output->action_icon(
-            new moodle_url('/course/view.php', array('id' => $course->id)),
+            new moodle_url('/course/view.php', array('id' => $course->id, 'section' => 0)),
             new pix_icon('all', get_string('section0name', 'format_folderview'), 'format_folderview')
         );
 

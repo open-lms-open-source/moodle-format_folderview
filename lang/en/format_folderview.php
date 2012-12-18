@@ -55,3 +55,4 @@ $string['showfromothers'] = 'Show topic';
 $string['showalltopics'] = 'Show all topics';
 $string['showonlytopic'] = 'Show only topic {$a}';
 $string['currenttopic'] = 'This topic';
+$string['deletecoursedone'] = 'Deleted - Folder View';
