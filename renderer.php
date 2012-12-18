@@ -228,30 +228,47 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo $this->section_footer();
         echo $this->end_section_list();
 
+        $viewallurl = html_writer::link(
+            new moodle_url('/course/view.php', array('id' => $course->id)),
+            get_string('section0name', 'format_folderview')
+        );
+
+        echo html_writer::start_tag('div', array('class' => 'section-navigation mdl-bottom'));
+        echo html_writer::tag('div', $viewallurl, array('class' => 'viewall'));
+        echo $this->jumpto_menu($course, $sections);
+        echo html_writer::end_tag('div');
+
+        // close single-section div.
+        echo html_writer::end_tag('div');
+    }
+
+    /**
+     * @param stdClass $course
+     * @param section_info[] $sections
+     * @return string
+     */
+    public function jumpto_menu($course, $sections) {
         $sectionmenu = array();
         foreach ($sections as $section) {
-            if ($section->uservisible and $section->section != 0) {
+            if ($section->section > $course->numsections) {
+                continue;
+            } else if ($section->section == 0) {
+                $sectionmenu[0] = get_string('section0name', 'format_folderview');
+            } else if ($section->uservisible) {
                 $sectionmenu[$section->section] = get_section_name($course, $section);
             }
         }
-        if (!empty($sectionmenu)) {
-            $viewall    = get_string('section0name', 'format_folderview');
-            $viewallurl = html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), $viewall);
-
-            array_unshift($sectionmenu, $viewall);
+        if (count($sectionmenu) > 1) {
             $select         = new single_select(new moodle_url('/course/view.php', array('id' => $course->id)), 'section', $sectionmenu);
             $select->label  = get_string('jumpto');
             $select->class  = 'jumpmenu';
             $select->formid = 'sectionmenu';
 
-            echo html_writer::start_tag('div', array('class' => 'section-navigation mdl-bottom'));
-            echo html_writer::tag('div', $viewallurl, array('class' => 'viewall'));
-            echo $this->output->render($select);
-            echo html_writer::end_tag('div');
+            return $this->output->render($select);
+        } else {
+            $select = null;
         }
-
-        // close single-section div.
-        echo html_writer::end_tag('div');
+        return '';
     }
 
     /**
