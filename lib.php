@@ -227,6 +227,16 @@ function format_folderview_display_section($course, $currentsection) {
     } else {
         $section = format_folderview_course_get_display($course->id);
     }
+    if ($section > 0 and $section != $currentsection) {
+        $modinfo     = get_fast_modinfo($course);
+        $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
+
+        // If the user cannot view, go to all sections or they will see
+        // infinite error loop
+        if (!$sectioninfo->uservisible) {
+            $section = 0;
+        }
+    }
     if ($section != $currentsection) {
         redirect(new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section)));
     }
