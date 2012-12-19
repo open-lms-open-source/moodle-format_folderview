@@ -234,7 +234,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo $this->end_section_list();
 
         $viewallurl = html_writer::link(
-            new moodle_url('/course/view.php', array('id' => $course->id)),
+            new moodle_url('/course/view.php', array('id' => $course->id, 'section' => 0)),
             get_string('section0name', 'format_folderview')
         );
 
