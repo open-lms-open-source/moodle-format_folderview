@@ -78,13 +78,22 @@ M.course.format.swap_sections = function(Y, node1, node2) {
  */
 M.course.format.process_sections = function(Y, sectionlist, response, sectionfrom, sectionto) {
     var CSS = {
-        SECTIONNAME: 'sectionname'
+        SECTIONNAME: 'sectionname',
+        ONESECTIONIMAGE: '.right.side .icon.one'
     };
 
     if (response.action == 'move') {
         // update titles in all affected sections
         for (var i = sectionfrom; i <= sectionto; i++) {
             sectionlist.item(i).one('.' + CSS.SECTIONNAME).setContent(response.sectiontitles[i]);
+            var url = sectionlist.item(i).one('.' + CSS.SECTIONNAME + ' a').get('href');
+            var onesectionimg = sectionlist.item(i).one(CSS.ONESECTIONIMAGE);
+            if (url && onesectionimg) {
+                var onesectionlink = onesectionimg.get('parentNode');
+                if (onesectionlink && onesectionlink.get('nodeName').toLowerCase() === 'a') {
+                    onesectionlink.set('href', url);
+                }
+            }
         }
     }
 };
