@@ -240,12 +240,15 @@ function format_folderview_display_section($course, $currentsection) {
     global $DB;
 
     $section   = optional_param('section', -1, PARAM_INT);
+    $topic     = optional_param('topic', -1, PARAM_INT);
     $sectionid = optional_param('sectionid', 0, PARAM_INT);
     if ($sectionid) {
         $section = $DB->get_field('course_sections', 'section', array('id' => $sectionid, 'course' => $course->id), MUST_EXIST);
     }
     if ($section != -1) {
         $section = format_folderview_course_set_display($course->id, $section);
+    } else if ($topic != -1) {
+        $section = format_folderview_course_set_display($course->id, $topic);
     } else {
         $section = format_folderview_course_get_display($course->id);
     }
