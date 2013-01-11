@@ -446,9 +446,9 @@ class format_folderview_renderer extends format_section_renderer_base {
                 $fieldsets[$catname] = array();
             }
             if (!$screenreader) {
-                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.s($name).'" border="0" hspace="2" />'.$name.'</a></div>';
+                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
             } else {
-                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="'.s($name).'" border="0" hspace="2" />'.$name.'</label></div>';
+                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</label></div>';
             }
             //Add item html its categories array
             array_push($fieldsets[$catname], $itemhtml);
@@ -464,14 +464,14 @@ class format_folderview_renderer extends format_section_renderer_base {
                 if ($colitems == 0) {
                     $colitems = ceil($totalitems / $numcols);
                 }
-                $output = $output.'<fieldset class="rescat"><legend>'.$fsname.'</legend><div class="column">';
+                $output = $output.'<div class="rescat"><div class="rescatlegend">'.$fsname.'</div><div class="column">';
                 foreach ($fstext as $index => $item) {
                     if (($index != 0) and ($index % $colitems == 0)) {
                         $output = $output.'</div><div class="column">';
                     }
                     $output = $output.$item;
                 }
-                $output = $output.'</div><div class="clearfix"></div></fieldset>';
+                $output = $output.'</div><div class="clearfix"></div></div>';
             }
         }
         echo $output;
