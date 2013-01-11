@@ -96,8 +96,10 @@ class format_folderview_renderer extends format_section_renderer_base {
     protected function section_edit_controls($course, $section, $onsectionpage = false) {
         global $PAGE;
 
+        $sectionname = get_section_name($course, $section);
+
         if ($section->uservisible) {
-            $title      = get_string('showonlytopic', 'format_folderview', get_section_name($course, $section));
+            $title      = get_string('showonlytopic', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
             $onesection = html_writer::link(course_get_url($course, $section->section, array('sr' => $section->section)), $img, array('title' => $title));
         } else {
@@ -122,14 +124,14 @@ class format_folderview_renderer extends format_section_renderer_base {
         $controls = array();
 
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
-            $title      = get_string('sectionaddresource', 'format_folderview', get_section_name($course, $section));
+            $title      = get_string('sectionaddresource', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
             $controls[] = html_writer::link('#tab_addResource', $img, array('title' => $title));
         }
         if (has_capability('moodle/course:update', $coursecontext)) {
             $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => $section->section));
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'class' => 'icon edit', 'alt' => get_string('edit')));
-            $controls[] = html_writer::link($url, $img, array('title' => get_string('editsummary')));
+            $controls[] = html_writer::link($url, $img, array('title' => get_string('editsection', 'format_folderview', $sectionname)));
         }
         if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
             if ($course->marker == $section->section) { // Show the "light globe" on/off.
