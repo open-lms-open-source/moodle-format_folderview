@@ -483,7 +483,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             $currenttopic = '';
         }
         echo '<div id="divAddToSection">';
-        echo '<label>'.$straddtotopic.'<br /><select id="selAddToSection" name="section">';
+        echo '<label for="selAddToSection">'.$straddtotopic.'</label><br /><select id="selAddToSection" name="section">';
         foreach ($sections as $id => $asection) {
             $label = get_section_name($course, $asection);
             if ($section->section == $id) {
@@ -492,7 +492,7 @@ class format_folderview_renderer extends format_section_renderer_base {
                 echo "<option value=\"$id\">$label</option>";
             }
         }
-        echo '</select></label> ';
+        echo '</select> ';
         if ($screenreader) {
             echo '<input type="submit" name="do" id="addResourceButton" value="'.$straddresource.'" />';
         }
