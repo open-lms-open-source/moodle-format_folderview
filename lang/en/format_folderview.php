@@ -56,3 +56,4 @@ $string['showalltopics'] = 'Show all topics';
 $string['showonlytopic'] = 'Show only topic {$a}';
 $string['currenttopic'] = 'This topic';
 $string['deletecoursedone'] = 'Deleted - Folder View';
+$string['viewalltopics'] = 'Return to the course page with a list of all the topics';
