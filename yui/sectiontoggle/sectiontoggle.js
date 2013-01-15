@@ -28,6 +28,11 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                  */
                 collapseStr: '',
 
+                /**
+                 * Holds section activity list IDs
+                 */
+                sectionActivitiesIds: [],
+
                 initializer: function(config) {
                     this.log(config);
 
@@ -81,13 +86,47 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
 
                         sectionName.setAttribute('aria-hidden', 'true');
                         sectionName.set('id', 'sectionname_' + sectionnum);
-                        sectionActivities.set('id', 'sectioncontent_' + sectionnum);
-                        sectionActivities.setAttribute('tabindex', '-1');
-                        sectionActivities.setAttribute('role', 'region');
-                        sectionActivities.setAttribute('aria-expanded', 'false');
-                        sectionActivities.setAttribute('aria-labelledby', sectionName.get('id'));
-                        control.setAttribute('aria-controls', sectionActivities.get('id'));
+                        if (sectionActivities) {
+                            sectionActivities.set('id', 'sectioncontent_' + sectionnum);
+                            sectionActivities.setAttribute('tabindex', '-1');
+                            sectionActivities.setAttribute('role', 'region');
+                            sectionActivities.setAttribute('aria-expanded', 'false');
+                            sectionActivities.setAttribute('aria-labelledby', sectionName.get('id'));
+                            control.setAttribute('aria-controls', sectionActivities.get('id'));
+                            this.register_activity_region(sectionActivities.get('id'));
+                        }
                     }, this);
+                },
+
+                /**
+                 * Updates aria-controls on the expand/collapse all buttons
+                 * @param id
+                 */
+                register_activity_region: function(id) {
+                    var collapseNode = Y.one(CSS.COLLAPSEALL);
+                    var expandNode = Y.one(CSS.EXPANDALL);
+
+                    this.sectionActivitiesIds.push(id);
+                    var idCSV = this.sectionActivitiesIds.join(',');
+                    if (collapseNode) {
+                        collapseNode.setAttribute('aria-controls', idCSV);
+                    }
+                    if (expandNode) {
+                        expandNode.setAttribute('aria-controls', idCSV);
+                    }
+                },
+
+                /**
+                 * Set the focus on the passed section
+                 * @param node
+                 */
+                focus_on_section: function(node) {
+                    if (node && node.hasClass('expanded')) {
+                        var sectionActivities = node.one(CSS.SECTIONACTIVITIES);
+                        if (sectionActivities) {
+                            sectionActivities.focus();
+                        }
+                    }
                 },
 
                 /**
@@ -98,9 +137,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     e.preventDefault();
                     var section = e.target.ancestor(CSS.SECTION);
                     this.toggle_section_classes(section);
-                    if (section && section.hasClass('expanded')) {
-                        section.one(CSS.SECTIONACTIVITIES).focus();
-                    }
+                    this.focus_on_section(section);
                     this.save_expanded_sections();
                 },
 
@@ -149,10 +186,21 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                             this.save_expanded_sections();
                         } else {
                             // Bug fix - this element can be created dynamically when
-                            // the section is empty, add our precious class...
+                            // the section is empty, add our precious stuffs...
                             var activities = section.one(CSS.SECTIONACTIVITIES);
                             if (activities && !activities.hasClass('expanded')) {
+                                var sectionnum  = this.get_section_number(section);
+                                var sectionName = section.one(CSS.SECTIONNAME);
+                                var control = section.one(CSS.TOGGLETARGET);
+
                                 activities.addClass('expanded');
+                                activities.set('id', 'sectioncontent_' + sectionnum);
+                                activities.setAttribute('tabindex', '-1');
+                                activities.setAttribute('role', 'region');
+                                activities.setAttribute('aria-expanded', 'true');
+                                activities.setAttribute('aria-labelledby', sectionName.get('id'));
+                                control.setAttribute('aria-controls', activities.get('id'));
+                                this.register_activity_region(activities.get('id'));
                             }
                         }
                     }
@@ -164,6 +212,10 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                  */
                 toggle_section_classes: function(node) {
                     if (node) {
+                        var sectionnum = this.get_section_number(node);
+                        if (sectionnum == 0) {
+                            return;
+                        }
                         var addClass = true;
                         var nodeList = [node, node.one(CSS.SECTIONACTIVITIES), node.one(CSS.SECTIONSUMMARY)];
                         var link = node.one(CSS.TOGGLETARGET);
@@ -183,6 +235,9 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
 
                         for (var i = 0; i < nodeList.length; i++) {
                             var aNode = nodeList[i];
+                            if (!aNode) {
+                                continue;
+                            }
                             if (addClass) {
                                 aNode.addClass('expanded');
                                 if (aNode.test(CSS.SECTIONACTIVITIES)) {

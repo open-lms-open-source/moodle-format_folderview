@@ -297,8 +297,8 @@ class format_folderview_renderer extends format_section_renderer_base {
         $expandicon     = $this->output->pix_icon('t/switch_plus', $strexpandall);
         $collapseicon   = $this->output->pix_icon('t/switch_minus', $strcollapseall);
 
-        $output  = html_writer::link($url, $expandicon.get_accesshide($strexpandall), array('class' => 'expand-sections'));
-        $output .= html_writer::link($url, $collapseicon.get_accesshide($strcollapseall), array('class' => 'collapse-sections'));
+        $output  = html_writer::link($url, $expandicon.get_accesshide($strexpandall), array('class' => 'expand-sections', 'role' => 'button'));
+        $output .= html_writer::link($url, $collapseicon.get_accesshide($strcollapseall), array('class' => 'collapse-sections', 'role' => 'button'));
 
         return html_writer::tag('div', $output, array('id' => 'topiclinktop', 'class' => 'topiclistlink'));
     }
