@@ -44,8 +44,8 @@
 }
 
 /* Section expanded/collapsed */
-.course-content ul.folderview li.section .summary,
-.course-content ul.folderview li.section ul.section li.activity {
+.jsenabled .course-content ul.folderview li.section .summary,
+.jsenabled .course-content ul.folderview li.section ul.section li.activity {
     display: none;
 }
 
