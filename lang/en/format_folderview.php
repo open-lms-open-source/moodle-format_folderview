@@ -30,9 +30,15 @@
 
 $string['activities'] = 'Activities';
 $string['addblock'] = 'Add Block';
+$string['showaddblock'] = 'Show Add Block';
+$string['hideaddblock'] = 'Hide Add Block';
 $string['addresource'] = 'Add Resource';
+$string['showaddresource'] = 'Show Add Resource';
+$string['hideaddresource'] = 'Hide Add Resource';
 $string['sectionaddresource'] = 'Add resource to {$a}';
 $string['addtopic'] = 'Add Topic';
+$string['showaddtopic'] = 'Show Add Topic';
+$string['hideaddtopic'] = 'Hide Add Topic';
 $string['addtotopic'] = 'Add To';
 $string['close'] = 'Close';
 $string['collapseall'] = 'Collapse All';

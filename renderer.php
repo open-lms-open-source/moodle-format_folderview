@@ -130,7 +130,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
             $title      = get_string('sectionaddresource', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
-            $controls[] = html_writer::link('#tab_addResource', $img, array('title' => $title));
+            $controls[] = html_writer::link('#tab_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
         }
         if (has_capability('moodle/course:update', $coursecontext)) {
             $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => $section->section));
@@ -338,13 +338,22 @@ class format_folderview_renderer extends format_section_renderer_base {
         // Action Menu - links for adding content and editing page
         if (!$screenreader) {
             if ($isroot && $hascourseupdate) {
-                echo html_writer::tag('span', html_writer::link('#', get_string('addtopic', 'format_folderview')), array('class' => 'tab', 'id' => 'tab_addTopic'));
+                $before = get_string('showaddtopic', 'format_folderview');
+                $after  = get_string('hideaddtopic', 'format_folderview');
+                $text   = get_string('addtopic', 'format_folderview');
+                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addTopic'));
             }
             if ($hasmanageactivities) {
-                echo html_writer::tag('span', html_writer::link('#', get_string('addresource', 'format_folderview')), array('class' => 'tab', 'id' => 'tab_addResource'));
+                $before = get_string('showaddresource', 'format_folderview');
+                $after  = get_string('hideaddresource', 'format_folderview');
+                $text   = get_string('addresource', 'format_folderview');
+                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addResource'));
             }
             if ($this->page->user_can_edit_blocks()) {
-                echo html_writer::tag('span', html_writer::link('#', get_string('addblock', 'format_folderview')), array('class' => 'tab', 'id' => 'tab_addBlock'));
+                $before = get_string('showaddblock', 'format_folderview');
+                $after  = get_string('hideaddblock', 'format_folderview');
+                $text   = get_string('addblock', 'format_folderview');
+                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addBlock'));
             }
         }
         if ($hascourseupdate) {
@@ -359,7 +368,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         //output the Cancel button for all add dialogs
         if (!$screenreader) {
             $strclose = get_string('close', 'format_folderview');
-            $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null, array('title' => $strclose));
+            $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null, array('title' => $strclose, 'aria-label' => $strclose, 'role' => 'button'));
             echo html_writer::tag('div', $icon, array('id' => 'menuPanelClose'));
         }
         echo $this->action_menu_add_topic_dialog($course);
@@ -386,7 +395,8 @@ class format_folderview_renderer extends format_section_renderer_base {
                 'courseid' => $course->id,
             ));
 
-            $output .= html_writer::start_tag('div', array('id' => 'addTopic', 'class' => 'dialog', 'tabindex' => '-1'));
+            $output .= html_writer::start_tag('div', array('id' => 'addTopic', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
+            $output .= html_writer::tag('span', get_string('addtopic', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
             if (!empty($USER->screenreader)) {
                 $output .= $this->output->heading(get_string('addtopic', 'format_folderview'), 3, '', 'tab_addTopic');
             }
@@ -424,7 +434,8 @@ class format_folderview_renderer extends format_section_renderer_base {
         $modtypes = format_folderview_get_course_resource_types($course, $section->section, $modnames);
 
 
-        echo '<div id="addResource" class="dialog" tabindex="-1">';
+        echo '<div id="addResource" class="dialog" tabindex="-1" role="region">';
+        echo html_writer::tag('span', get_string('addresource', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
         if ($screenreader) {
             echo $this->output->heading($straddresource, 3, '', 'tab_addResource');
         }
@@ -536,7 +547,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             $menu[$blockname] = html_writer::link(new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname)), $blocktitle);
             $menu[$blockname] = html_writer::tag('div', $menu[$blockname]);
         }
-        $output = '';
+        $output = html_writer::tag('span', get_string('addblock', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
 
         $size = ceil(count($menu) / 3);
 
@@ -544,6 +555,6 @@ class format_folderview_renderer extends format_section_renderer_base {
             $output .= html_writer::tag('div', implode('', $chunk), array('class' => 'column'));
         }
         $output .= html_writer::tag('div', '&nbsp;', array('class' => 'clearfix'));
-        return html_writer::tag('div', $output, array('id' => 'addBlock', 'class' => 'dialog', 'tabindex' => '-1'));
+        return html_writer::tag('div', $output, array('id' => 'addBlock', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
     }
 }

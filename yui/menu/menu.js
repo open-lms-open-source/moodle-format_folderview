@@ -4,16 +4,17 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
             MAINWRAPPER: '#menuPanel',
             CLOSEICON: '#menuPanelClose',
             FOCUS: '.focusonme',
-            TABS: 'span.tab a',
-            ADDRESOURCE: 'li.section .right .add',
+            TABS: 'span.tab a[role=button]',
+            ADDRESOURCE: 'li.section .right .add_widget',
             SECTIONROOT: 'ul.folderview',
             ADDRESOURCESELECTOR: '#selAddToSection',
-            ADDRESOURCETAB: '#tab_addResource',
+            ADDRESOURCETAB: '#tab_addResource a[role=button]',
             ADDRESOURCEDIALOG: '#addResource',
             ADDRESOURCELINK: '.restype a',
             ADDRESOURCEHIDDEN: '#addResourceHidden',
             ADDRESOURCEBUTTON: '#addResourceButton',
-            ADDRESOURCERADIO: 'input[type=radio][name=add]'
+            ADDRESOURCERADIO: 'input[type=radio][name=add]',
+            DIALOGLABEL: '.dialoglabel'
         };
 
         var MENUNAME = 'format_folderview_menu';
@@ -24,13 +25,9 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
 
         Y.extend(MENU, Y.Base, {
                 initializer: function(config) {
-                    var wrapperNode = Y.one(CSS.TABSWRAPPER);
-                    if (wrapperNode) {
-                        wrapperNode.delegate('click', this.handle_tab_click, CSS.TABS, this);
-                    }
                     var closeNode = Y.one(CSS.CLOSEICON);
                     if (closeNode) {
-                        closeNode.on('click', this.hide_menu_panel, this);
+                        closeNode.on('click', this.handle_close_button, this);
                     }
                     var rootNode = Y.one(CSS.SECTIONROOT);
                     if (rootNode) {
@@ -46,6 +43,59 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                             resourceNode.delegate('change', this.handle_add_resource_radio, CSS.ADDRESOURCERADIO, this);
                         }
                     }
+                    this.init_aria();
+                },
+
+                /**
+                 * Associate tabs to their regions
+                 */
+                init_aria: function() {
+                    Y.all(CSS.TABSWRAPPER + ' ' + CSS.TABS).each(function(tab) {
+
+                        var tabPanelId = tab.get('parentNode').get('id').replace('tab_', '');
+                        var tabPanel = Y.one('#' + tabPanelId);
+
+                        tabPanel.plug(M.local_mr.ariacontrolled, {
+                            ariaLabelledBy: tabPanel.one(CSS.DIALOGLABEL),
+                            ariaState: 'aria-hidden'
+                        });
+
+                        // Run extra logic to show/hide tab
+                        tabPanel.local_mr_ariacontrolled.on('beforeUpdateState', function(e) {
+                            if (e.target.get('visible')) {
+                                this.show_menu_panel(tabPanelId);
+                            } else {
+                                this.hide_menu_panel();
+                            }
+                        }, this);
+
+                        tab.plug(M.local_mr.ariacontrol, { ariaControls: tabPanel });
+
+                        // Close any OTHER tabs that might be open
+                        tab.local_mr_ariacontrol.on('beforeToggle', function() {
+                            var selectedTab = this.find_selected_tab();
+                            if (selectedTab !== false && selectedTab.generateID() != tab.generateID()) {
+                                selectedTab.local_mr_ariacontrol.toggle_state();
+                            }
+                        }, this);
+                    }, this);
+                },
+
+                /**
+                 * Find the currently selected tab
+                 *
+                 * Returns false if no tab is selected
+                 * @return {*}
+                 */
+                find_selected_tab: function() {
+                    var selectedTab = false;
+                    Y.all(CSS.TABSWRAPPER + ' ' + CSS.TABS).each(function(tab) {
+                        var nodePanel = tab.local_mr_ariacontrol.get('ariaControls');
+                        if (nodePanel.local_mr_ariacontrolled.get('visible')) {
+                            selectedTab = tab;
+                        }
+                    });
+                    return selectedTab;
                 },
 
                 /**
@@ -58,12 +108,33 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                 },
 
                 /**
+                 * Handles the close dialog button
+                 * @param e
+                 */
+                handle_close_button: function(e) {
+                    e.preventDefault();
+
+                    var tab = this.find_selected_tab();
+                    if (tab !== false) {
+                        tab.local_mr_ariacontrol.toggle_state();
+                        tab.focus();
+                    }
+                },
+
+                /**
                  * Handle section widget add resource click
                  * @param e
                  */
                 handle_show_add_resource: function(e) {
                     var section = e.target.ancestor('li.section');
-                    this.show_menu_panel(Y.one(CSS.ADDRESOURCETAB));
+                    var selectedTab = this.find_selected_tab();
+                    var resourceTab = Y.one(CSS.ADDRESOURCETAB);
+
+                    if (selectedTab === false || resourceTab.generateID() != selectedTab.generateID()) {
+                        resourceTab.local_mr_ariacontrol.toggle_state();
+                    } else {
+                        resourceTab.local_mr_ariacontrol.get('ariaControls').focus();
+                    }
 
                     // IE needs this verbose processing for it to update
                     // Will be fixed with http://yuilibrary.com/projects/yui3/ticket/2528084
@@ -103,37 +174,12 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                 },
 
                 /**
-                 * Handle tab click
-                 * @param e
-                 */
-                handle_tab_click: function(e) {
-                    var node;
-                    if (e.target.test('span')) {
-                        node = e.target;
-                    } else {
-                        node = e.target.ancestor('span');
-                    }
-                    if (!node.hasClass('nodialog')) {
-                        e.preventDefault();
-                        this.show_menu_panel(node);
-                    }
-                },
-
-                /**
                  * Show a tab/panel
-                 * @param node
+                 * @param tabPanelId
                  */
-                show_menu_panel: function(node) {
-                    this.hide_menu_panel();
-
-                    var id = node.get('id').replace('tab_', '');
-                    Y.one(CSS.MAINWRAPPER).set('className', 'dlg_' + id);
-                    Y.one('body').addClass(id.toLowerCase());
-
-                    var focusNode = Y.one('#' + id + ' ' + CSS.FOCUS);
-                    if (focusNode) {
-                        focusNode.focus();
-                    }
+                show_menu_panel: function(tabPanelId) {
+                    Y.one(CSS.MAINWRAPPER).set('className', 'dlg_' + tabPanelId);
+                    Y.one('body').addClass(tabPanelId.toLowerCase());
                 },
 
                 /**
@@ -156,6 +202,6 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
         }
     },
     '@VERSION@', {
-        requires: ['base', 'event']
+        requires: ['base', 'event', 'moodle-local_mr-ariacontrol', 'moodle-local_mr-ariacontrolled']
     }
 );
