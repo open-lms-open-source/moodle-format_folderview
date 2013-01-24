@@ -67,7 +67,6 @@ $PAGE->requires->yui_module(
         'expandedsections' => $expandedsections,
     ))
 );
-$PAGE->requires->strings_for_js(array('expand', 'collapse'), 'format_folderview');
 
 if ($PAGE->user_is_editing()) {
     $PAGE->requires->yui_module(

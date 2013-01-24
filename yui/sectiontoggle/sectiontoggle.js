@@ -4,9 +4,10 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
             ALLSECTIONS: '.course-content ul.folderview li.section',
             SECTION: 'li.section',
             SECTIONACTIVITIES: 'ul.section',
+            SECTIONCONTENT: '.content',
             SECTIONSUMMARY: '.summary',
             SECTIONNAME: '.sectionname',
-            TOGGLETARGET: '.left.side a[role=button]',
+            TOGGLETARGET: '.left.side .foldertoggle',
             EXPANDALL: '#topiclinktop .expand-sections',
             COLLAPSEALL: '#topiclinktop .collapse-sections'
         };
@@ -18,36 +19,13 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
         };
 
         Y.extend(SECTIONTOGGLE, Y.Base, {
-                /**
-                 * Holds Expand string
-                 */
-                expandStr: '',
-
-                /**
-                 * Holds Collapse string
-                 */
-                collapseStr: '',
-
-                /**
-                 * Holds section activity list IDs
-                 */
-                sectionActivitiesIds: [],
-
                 initializer: function(config) {
                     this.log(config);
-
-                    this.expandStr = M.util.get_string('expand', 'format_folderview');
-                    this.collapseStr = M.util.get_string('collapse', 'format_folderview');
 
                     var sections = Y.all(CSS.ALLSECTIONS);
 
                     // Initialize aria
                     this.init_aria_attributes(sections);
-
-                    // Expand sections that need it
-                    Y.Array.forEach(this.get('expandedsections'), function(expandedsection) {
-                        this.toggle_section_classes(Y.one('#section-' + expandedsection))
-                    }, this);
 
                     // Setup our watcher for clicks
                     var wrapperNode = Y.one(CSS.MAINWRAPPER);
@@ -75,39 +53,50 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     if (sections.isEmpty()) {
                         return;
                     }
+                    var sectionContentIds = [];
                     sections.each(function(node) {
                         var sectionnum = this.get_section_number(node);
                         if (sectionnum == 0) {
                             return;
                         }
-                        var sectionActivities = node.one(CSS.SECTIONACTIVITIES);
+                        var sectionContent = node.one(CSS.SECTIONCONTENT);
                         var sectionName = node.one(CSS.SECTIONNAME);
                         var control = node.one(CSS.TOGGLETARGET);
 
-                        sectionName.setAttribute('aria-hidden', 'true');
-                        sectionName.set('id', 'sectionname_' + sectionnum);
-                        if (sectionActivities) {
-                            sectionActivities.set('id', 'sectioncontent_' + sectionnum);
-                            sectionActivities.setAttribute('tabindex', '-1');
-                            sectionActivities.setAttribute('role', 'region');
-                            sectionActivities.setAttribute('aria-expanded', 'false');
-                            sectionActivities.setAttribute('aria-labelledby', sectionName.get('id'));
-                            control.setAttribute('aria-controls', sectionActivities.get('id'));
-                            this.register_activity_region(sectionActivities.get('id'));
+                        sectionContent.plug(M.local_mr.ariacontrolled, {
+                            ariaLabelledBy: sectionName,
+                            ariaState: 'aria-expanded',
+                            autoHideShow: false,
+                            autoFocus: false
+                        });
+                        control.plug(M.local_mr.ariacontrol, { ariaControls: sectionContent });
+
+                        // Need to run extra code after toggle
+                        control.local_mr_ariacontrol.on('afterToggle', function(e) {
+                            this.toggle_section_classes(
+                                e.target.get('host').ancestor(CSS.SECTION)
+                            );
+                        }, this);
+
+                        // Expand the section if set in user pref
+                        if (Y.Array.indexOf(this.get('expandedsections'), sectionnum) !== -1) {
+                            control.local_mr_ariacontrol.toggle_state();
                         }
+                        sectionContentIds.push(sectionContent.generateID());
                     }, this);
+
+                    this.init_aria_attributes_toggle_all(sectionContentIds);
                 },
 
                 /**
                  * Updates aria-controls on the expand/collapse all buttons
-                 * @param id
+                 * @param sectionContentIds
                  */
-                register_activity_region: function(id) {
+                init_aria_attributes_toggle_all: function(sectionContentIds) {
                     var collapseNode = Y.one(CSS.COLLAPSEALL);
                     var expandNode = Y.one(CSS.EXPANDALL);
+                    var idCSV = sectionContentIds.join(',');
 
-                    this.sectionActivitiesIds.push(id);
-                    var idCSV = this.sectionActivitiesIds.join(',');
                     if (collapseNode) {
                         collapseNode.setAttribute('aria-controls', idCSV);
                     }
@@ -122,10 +111,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                  */
                 focus_on_section: function(node) {
                     if (node && node.hasClass('expanded')) {
-                        var sectionActivities = node.one(CSS.SECTIONACTIVITIES);
-                        if (sectionActivities) {
-                            sectionActivities.focus();
-                        }
+                        node.one(CSS.SECTIONCONTENT).local_mr_ariacontrolled.focus();
                     }
                 },
 
@@ -136,7 +122,6 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                 handle_section_toggle: function(e) {
                     e.preventDefault();
                     var section = e.target.ancestor(CSS.SECTION);
-                    this.toggle_section_classes(section);
                     this.focus_on_section(section);
                     this.save_expanded_sections();
                 },
@@ -148,8 +133,8 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                 handle_expand_all: function(e) {
                     e.preventDefault();
                     Y.all(CSS.ALLSECTIONS).each(function(node) {
-                        if (!node.hasClass('expanded')) {
-                            this.toggle_section_classes(node);
+                        if (!node.hasClass('expanded') && this.get_section_number(node) != 0) {
+                            node.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
                         }
                     }, this);
 
@@ -163,8 +148,8 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                 handle_collapse_all: function(e) {
                     e.preventDefault();
                     Y.all(CSS.ALLSECTIONS).each(function(node) {
-                        if (node.hasClass('expanded')) {
-                            this.toggle_section_classes(node);
+                        if (node.hasClass('expanded') && this.get_section_number(node) != 0) {
+                            node.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
                         }
                     }, this);
 
@@ -182,25 +167,14 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     }
                     if (section) {
                         if (!section.hasClass('expanded')) {
-                            this.toggle_section_classes(section);
+                            section.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
                             this.save_expanded_sections();
                         } else {
                             // Bug fix - this element can be created dynamically when
-                            // the section is empty, add our precious stuffs...
+                            // the section is empty, add our precious class...
                             var activities = section.one(CSS.SECTIONACTIVITIES);
                             if (activities && !activities.hasClass('expanded')) {
-                                var sectionnum  = this.get_section_number(section);
-                                var sectionName = section.one(CSS.SECTIONNAME);
-                                var control = section.one(CSS.TOGGLETARGET);
-
                                 activities.addClass('expanded');
-                                activities.set('id', 'sectioncontent_' + sectionnum);
-                                activities.setAttribute('tabindex', '-1');
-                                activities.setAttribute('role', 'region');
-                                activities.setAttribute('aria-expanded', 'true');
-                                activities.setAttribute('aria-labelledby', sectionName.get('id'));
-                                control.setAttribute('aria-controls', activities.get('id'));
-                                this.register_activity_region(activities.get('id'));
                             }
                         }
                     }
@@ -208,47 +182,22 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
 
                 /**
                  * Toggles section classes for when a section is expanded or not
-                 * @param node
+                 * @param section
                  */
-                toggle_section_classes: function(node) {
-                    if (node) {
-                        var sectionnum = this.get_section_number(node);
-                        if (sectionnum == 0) {
-                            return;
+                toggle_section_classes: function(section) {
+                    if (section) {
+                        var nodes = [section, section.one(CSS.SECTIONSUMMARY)];
+                        var sectionActivities = section.one(CSS.SECTIONACTIVITIES);
+                        if (sectionActivities) {
+                            nodes.push(sectionActivities);
                         }
-                        var addClass = true;
-                        var nodeList = [node, node.one(CSS.SECTIONACTIVITIES), node.one(CSS.SECTIONSUMMARY)];
-                        var link = node.one(CSS.TOGGLETARGET);
-                        var span = link.one('span');
-                        var fromStr = this.expandStr;
-                        var toStr = this.collapseStr;
+                        var nodeList = new Y.NodeList(nodes);
 
                         // Only trust section's class
-                        if (node.hasClass('expanded')) {
-                            addClass = false;
-                            fromStr = this.collapseStr;
-                            toStr = this.expandStr;
-                        }
-                        // Update help text
-                        link.setAttribute('title', link.getAttribute('title').replace(fromStr, toStr));
-                        span.set('innerHTML', span.get('innerHTML').replace(fromStr, toStr));
-
-                        for (var i = 0; i < nodeList.length; i++) {
-                            var aNode = nodeList[i];
-                            if (!aNode) {
-                                continue;
-                            }
-                            if (addClass) {
-                                aNode.addClass('expanded');
-                                if (aNode.test(CSS.SECTIONACTIVITIES)) {
-                                    aNode.setAttribute('aria-expanded', 'true');
-                                }
-                            } else {
-                                aNode.removeClass('expanded');
-                                if (aNode.test(CSS.SECTIONACTIVITIES)) {
-                                    aNode.setAttribute('aria-expanded', 'false');
-                                }
-                            }
+                        if (section.hasClass('expanded')) {
+                            nodeList.removeClass('expanded');
+                        } else {
+                            nodeList.addClass('expanded');
                         }
                     } else {
                         this.log('Section node does not exist');
@@ -329,6 +278,6 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
         }
     },
     '@VERSION@', {
-        requires: ['base', 'event', 'io']
+        requires: ['base', 'event', 'io', 'moodle-local_mr-ariacontrol', 'moodle-local_mr-ariacontrolled']
     }
 );

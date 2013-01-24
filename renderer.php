@@ -80,14 +80,13 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
         $sectionname = get_section_name($course, $section);
         if ($section->uservisible) {
-            $title = get_string('sectionexpandcollapse', 'format_folderview', array(
-                'action' => get_string('expand', 'format_folderview'),
-                'name' => $sectionname,
-            ));
+            $title    = get_string('showonlytopic', 'format_folderview', $sectionname);
+            $expand   = get_string('sectionexpand', 'format_folderview', $sectionname);
+            $collapse = get_string('sectioncollapse', 'format_folderview', $sectionname);
             $o = html_writer::link(
                 course_get_url($course, $section->section, array('sr' => $section->section)),
                 $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).html_writer::tag('span', $title, array('class' => 'accesshide')),
-                array('role' => 'button', 'title' => $title)
+                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'class' => 'foldertoggle')
             );
         } else {
             $o = $this->output->pix_icon('folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview');
