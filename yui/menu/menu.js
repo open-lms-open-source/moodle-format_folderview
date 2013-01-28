@@ -1,4 +1,6 @@
 YUI.add('moodle-format_folderview-menu', function(Y) {
+        var ADD_RESOURCE_ANCHOR = 'jumpto_addResource';
+
         var CSS = {
             TABSWRAPPER: '#menuPanelTabs',
             MAINWRAPPER: '#menuPanel',
@@ -12,8 +14,7 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
             ADDRESOURCEDIALOG: '#addResource',
             ADDRESOURCELINK: '.restype a',
             ADDRESOURCEHIDDEN: '#addResourceHidden',
-            ADDRESOURCEBUTTON: '#addResourceButton',
-            ADDRESOURCERADIO: 'input[type=radio][name=add]',
+            ADDRESOURCEANCHOR: 'a[name=' + ADD_RESOURCE_ANCHOR + ']',
             DIALOGLABEL: '.dialoglabel'
         };
 
@@ -37,10 +38,13 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                     if (resourceNode) {
                         resourceNode.delegate('click', this.handle_add_resource, CSS.ADDRESOURCELINK, this);
 
-                        var resourceButton = Y.one(CSS.ADDRESOURCEBUTTON);
-                        if (resourceButton) {
-                            resourceButton.set('disabled', true);
-                            resourceNode.delegate('change', this.handle_add_resource_radio, CSS.ADDRESOURCERADIO, this);
+                        // Move the anchor up to the tab
+                        var addResourceNode = Y.one(CSS.ADDRESOURCETAB);
+                        addResourceNode.setAttribute('name', ADD_RESOURCE_ANCHOR);
+
+                        var anchorNode = resourceNode.one(CSS.ADDRESOURCEANCHOR);
+                        if (anchorNode) {
+                            anchorNode.remove(true);
                         }
                     }
                     this.init_aria();
@@ -160,17 +164,6 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                         e.target.get('id').replace('add_mod_', '')
                     );
                     e.target.ancestor('form').submit();
-                },
-
-                /**
-                 * Handle a radio button selection from the "Add Resource" dialog
-                 */
-                handle_add_resource_radio: function() {
-                    if (Y.one(CSS.ADDRESOURCERADIO + ':checked')) {
-                        Y.one(CSS.ADDRESOURCEBUTTON).set('disabled', false);
-                    } else {
-                        Y.one(CSS.ADDRESOURCEBUTTON).set('disabled', true);
-                    }
                 },
 
                 /**

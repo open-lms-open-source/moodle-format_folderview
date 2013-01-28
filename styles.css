@@ -188,5 +188,52 @@
 #page-course-view-folderview .dlg_editLayout #tab_editLayout { border:1px solid; border-bottom-color:white;  }
 #page-course-view-folderview .menuPanelTabs .tab { display:inline-block; }
 #page-course-view-folderview .dialog { padding:0 1em 1em; margin:1em 0; }
-#page-course-view-folderview .dialog { display: none; }
-#page-course-view-folderview .screenreader .dialog { display: block; }
+#page-course-view-folderview .dialog { display: block; }
+#page-course-view-folderview.jsenabled .dialog { display: none; }
+#page-course-view-folderview #addBlock { display: none; }
+
+/* Show dialog labels (AKA headings) */
+#page-course-view-folderview #menuPanelDialog .dialoglabel {
+    display: block;
+}
+
+/* Access hide dialog labels (AKA headings) when JS is enabled */
+#page-course-view-folderview.jsenabled #menuPanelDialog .dialoglabel {
+    position: absolute;
+    left: -10000px;
+    font-weight: normal;
+    font-size: 1em;
+}
+
+/* Hide these based on JS */
+#page-course-view-folderview.jsenabled #addResource #addResourceButton,
+#page-course-view-folderview #tab_addTopic,
+#page-course-view-folderview #tab_addResource,
+#page-course-view-folderview #tab_addBlock {
+    display: none;
+}
+
+/* Show these based on JS */
+#page-course-view-folderview.jsenabled #tab_addTopic,
+#page-course-view-folderview.jsenabled #tab_addResource,
+#page-course-view-folderview.jsenabled #tab_addBlock {
+    display: inline-block;
+}
+
+/* When no JS, show the radio button and hide the link */
+#page-course-view-folderview #addResource .addreslink {
+    display: none;
+}
+
+#page-course-view-folderview #addResource .addresradio {
+    display: block;
+}
+
+/* When JS enabled, show the link and hide the radio button */
+#page-course-view-folderview.jsenabled #addResource .addreslink {
+    display: block;
+}
+
+#page-course-view-folderview.jsenabled #addResource .addresradio {
+    display: none;
+}

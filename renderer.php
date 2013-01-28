@@ -130,7 +130,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
             $title      = get_string('sectionaddresource', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
-            $controls[] = html_writer::link('#tab_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
+            $controls[] = html_writer::link('#jumpto_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
         }
         if (has_capability('moodle/course:update', $coursecontext)) {
             $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => $section->section));
@@ -312,8 +312,6 @@ class format_folderview_renderer extends format_section_renderer_base {
      * @return void
      */
     public function action_menu($course, $section, $sections, $modnames) {
-        global $USER;
-
         if (!$this->page->user_is_editing()) {
             return;
         }
@@ -322,39 +320,30 @@ class format_folderview_renderer extends format_section_renderer_base {
         $coursecontext = context_course::instance($course->id);
 
         $isroot = ($section->section == 0);
-        $screenreader = !empty($USER->screenreader);
         $hascourseupdate     = has_capability('moodle/course:update', $coursecontext);
         $hasmanageactivities = has_capability('moodle/course:manageactivities', $coursecontext);
 
-        if ($screenreader) {
-            $screenreaderclass = ' screenreader';
-        } else {
-            $screenreaderclass = '';
-        }
-
-        echo "<div id=\"menuPanel\" class=\"nodialog$screenreaderclass\" style=\"border-collapse:collapse\">";
+        echo "<div id=\"menuPanel\" class=\"nodialog\" style=\"border-collapse:collapse\">";
         echo "<div id=\"menuPanelTabs\" class=\"menuPanelTabs\">";
 
         // Action Menu - links for adding content and editing page
-        if (!$screenreader) {
-            if ($isroot && $hascourseupdate) {
-                $before = get_string('showaddtopic', 'format_folderview');
-                $after  = get_string('hideaddtopic', 'format_folderview');
-                $text   = get_string('addtopic', 'format_folderview');
-                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addTopic'));
-            }
-            if ($hasmanageactivities) {
-                $before = get_string('showaddresource', 'format_folderview');
-                $after  = get_string('hideaddresource', 'format_folderview');
-                $text   = get_string('addresource', 'format_folderview');
-                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addResource'));
-            }
-            if ($this->page->user_can_edit_blocks()) {
-                $before = get_string('showaddblock', 'format_folderview');
-                $after  = get_string('hideaddblock', 'format_folderview');
-                $text   = get_string('addblock', 'format_folderview');
-                echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addBlock'));
-            }
+        if ($isroot && $hascourseupdate) {
+            $before = get_string('showaddtopic', 'format_folderview');
+            $after  = get_string('hideaddtopic', 'format_folderview');
+            $text   = get_string('addtopic', 'format_folderview');
+            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addTopic'));
+        }
+        if ($hasmanageactivities) {
+            $before = get_string('showaddresource', 'format_folderview');
+            $after  = get_string('hideaddresource', 'format_folderview');
+            $text   = get_string('addresource', 'format_folderview');
+            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addResource'));
+        }
+        if ($this->page->user_can_edit_blocks()) {
+            $before = get_string('showaddblock', 'format_folderview');
+            $after  = get_string('hideaddblock', 'format_folderview');
+            $text   = get_string('addblock', 'format_folderview');
+            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addBlock'));
         }
         if ($hascourseupdate) {
             echo html_writer::tag('span', html_writer::link(new moodle_url('/course/editsection.php?id='.$section->id), get_string('topicsettings', 'format_folderview')), array('class' => 'tab nodialog', 'id' => 'tab_editTopic'));
@@ -366,11 +355,10 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo '<div id="menuPanelDialog">';
 
         //output the Cancel button for all add dialogs
-        if (!$screenreader) {
-            $strclose = get_string('close', 'format_folderview');
-            $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null, array('title' => $strclose, 'aria-label' => $strclose, 'role' => 'button'));
-            echo html_writer::tag('div', $icon, array('id' => 'menuPanelClose'));
-        }
+        $strclose = get_string('close', 'format_folderview');
+        $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null, array('title' => $strclose, 'aria-label' => $strclose, 'role' => 'button'));
+        echo html_writer::tag('div', $icon, array('id' => 'menuPanelClose'));
+
         echo $this->action_menu_add_topic_dialog($course);
         $this->action_menu_add_resources_dialog($course, $section, $sections, $modnames);
         echo $this->action_menu_add_block_dialog();
@@ -386,8 +374,6 @@ class format_folderview_renderer extends format_section_renderer_base {
      * @return string
      */
     public function action_menu_add_topic_dialog($course) {
-        global $USER;
-
         $output = '';
         if (has_capability('moodle/course:update', context_course::instance($course->id))) {
             $url = new moodle_url('/course/format/folderview/addsection.php', array(
@@ -396,10 +382,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             ));
 
             $output .= html_writer::start_tag('div', array('id' => 'addTopic', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
-            $output .= html_writer::tag('span', get_string('addtopic', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
-            if (!empty($USER->screenreader)) {
-                $output .= $this->output->heading(get_string('addtopic', 'format_folderview'), 3, '', 'tab_addTopic');
-            }
+            $output .= $this->output->heading(get_string('addtopic', 'format_folderview'), 3, 'dialoglabel');
             $output .= html_writer::start_tag('form', array('method' => 'post', 'action' => $url->out_omit_querystring()));
             $output .= html_writer::input_hidden_params($url);
             $output .= html_writer::tag('div', html_writer::label(get_string('sectiontitle', 'format_folderview'), 'newsection', true, array('class' => 'accesshide')));
@@ -421,31 +404,24 @@ class format_folderview_renderer extends format_section_renderer_base {
      * @return void
      */
     public function action_menu_add_resources_dialog($course, $section, $sections, $modnames) {
-        global $CFG, $USER;
+        global $CFG;
 
         if (!has_capability('moodle/course:manageactivities', context_course::instance($course->id))) {
             return;
         }
-        $screenreader = !empty($USER->screenreader);
         $straddresource = get_string('addresource', 'format_folderview');
         $strresources  = get_string('resources', 'format_folderview');
         $stractivities = get_string('activities');
         $straddtotopic = get_string('addtotopic', 'format_folderview');
         $modtypes = format_folderview_get_course_resource_types($course, $section->section, $modnames);
 
-
         echo '<div id="addResource" class="dialog" tabindex="-1" role="region">';
-        echo html_writer::tag('span', get_string('addresource', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
-        if ($screenreader) {
-            echo $this->output->heading($straddresource, 3, '', 'tab_addResource');
-        }
+        echo html_writer::link('#', '', array('name' => 'jumpto_addResource', 'aria-hidden' => 'true', 'tabindex' => '-1'));
+        echo $this->output->heading($straddresource, 3, 'dialoglabel');
         echo '<form method="GET" action="'.$CFG->wwwroot.'/course/format/folderview/addmod.php">';
         echo '<input type="hidden" name="id" value="'.$course->id.'" />';
         echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-
-        if (!$screenreader) {
-            echo '<input id="addResourceHidden" type="hidden" name="add" value="" />';
-        }
+        echo '<input id="addResourceHidden" type="hidden" name="add" value="" />';
 
         $fieldsets = array('Activities' => array(), 'Assignments' => array(), 'Resources' => array());
 
@@ -463,11 +439,9 @@ class format_folderview_renderer extends format_section_renderer_base {
             if (!isset($fieldsets[$catname])) {
                 $fieldsets[$catname] = array();
             }
-            if (!$screenreader) {
-                $itemhtml = '<div id="add_'.$modkey.'" class="restype"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
-            } else {
-                $itemhtml = '<div id="add_'.$modkey.'" class=""><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</label></div>';
-            }
+            $itemhtml = '<div id="add_'.$modkey.'" class="restype addreslink"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
+            $itemhtml .= '<div id="add_'.$modkey.'" class="addresradio"><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</label></div>';
+
             //Add item html its categories array
             array_push($fieldsets[$catname], $itemhtml);
         }
@@ -511,9 +485,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             }
         }
         echo '</select> ';
-        if ($screenreader) {
-            echo '<input type="submit" name="do" id="addResourceButton" value="'.$straddresource.'" />';
-        }
+        echo '<input type="submit" name="do" id="addResourceButton" value="'.$straddresource.'" />';
         echo '</div>';
 
         echo '<div class="clearfix"></div></form></div>'; //close addResource
@@ -525,8 +497,7 @@ class format_folderview_renderer extends format_section_renderer_base {
      * @return string
      */
     public function action_menu_add_block_dialog() {
-        global $USER;
-        if (!$this->page->user_is_editing() || !$this->page->user_can_edit_blocks() || !empty($USER->screenreader)) {
+        if (!$this->page->user_is_editing() || !$this->page->user_can_edit_blocks()) {
             return '';
         }
         $missingblocks = $this->page->blocks->get_addable_blocks();

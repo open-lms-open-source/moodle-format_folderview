@@ -34,7 +34,7 @@
 require_once(dirname(dirname(dirname(__DIR__))).'/config.php');
 
 $courseid = required_param('id', PARAM_INT);
-$add      = required_param('add', PARAM_TEXT);
+$add      = optional_param('add', '', PARAM_TEXT);
 $section  = required_param('section', PARAM_INT);
 $context  = context_course::instance($courseid);
 
@@ -42,6 +42,9 @@ require_login($courseid, false, null, false, true);
 require_capability('moodle/course:manageactivities', $context);
 require_sesskey();
 
+if (empty($add)) {
+    print_error('mustselectresource', 'format_folderview', new moodle_url('/course/view.php', array('id' => $courseid)));
+}
 redirect(new moodle_url('/course/mod.php?add='.$add, array(
     'id'      => $courseid,
     'section' => $section,
