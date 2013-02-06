@@ -55,6 +55,8 @@
 .course-content ul.folderview li.section.expanded .summary, /* Backup CSS */
 .course-content .single-section ul.folderview li.section .summary,
 .course-content .single-section ul.folderview li.section ul.section li.activity,
+.course-content ul.folderview li.section.orphaned .summary,
+.course-content ul.folderview li.section.orphaned ul.section li.activity,
 .course-content ul.folderview #section-0 .summary,
 .course-content ul.folderview #section-0 ul.section li.activity {
     display: block;
