@@ -158,14 +158,11 @@ class format_folderview_renderer extends format_section_renderer_base {
     }
 
     public function print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused) {
-        $courseclone = clone($course);
-        $courseclone->coursedisplay = COURSE_DISPLAY_SINGLEPAGE;
-
         echo html_writer::start_tag('div', array('class' => 'multi-section'));
         echo $this->all_sections_visibility_toggles();
-        echo $this->output->heading(get_section_name($courseclone, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
-        $this->action_menu($courseclone, $sections[0], $sections, $modnames);
-        parent::print_multiple_section_page($courseclone, $sections, $mods, $modnames, $modnamesused);
+        echo $this->output->heading(get_section_name($course, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
+        $this->action_menu($course, $sections[0], $sections, $modnames);
+        parent::print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused);
         echo html_writer::end_tag('div');
     }
 
@@ -181,17 +178,17 @@ class format_folderview_renderer extends format_section_renderer_base {
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
         global $PAGE;
 
-        // Can we view the section in question?
-        $context       = context_course::instance($course->id);
-        $canviewhidden = has_capability('moodle/course:viewhiddensections', $context);
+        $modinfo = get_fast_modinfo($course);
+        $course = course_get_format($course)->get_course();
 
-        if (!isset($sections[$displaysection])) {
+        // Can we view the section in question?
+        if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
             // This section doesn't exist
             print_error('unknowncoursesection', 'error', null, $course->fullname);
             return;
         }
 
-        if (!$sections[$displaysection]->visible && !$canviewhidden) {
+        if (!$sectioninfo->uservisible) {
             if (!$course->hiddensections) {
                 echo $this->start_section_list();
                 echo $this->section_hidden($displaysection);
@@ -216,25 +213,23 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         // Title attributes
         $titleattr = 'mdl-align title headingblock header outline pagetitle';
-        if (!$sections[$displaysection]->visible) {
+        if (!$sectioninfo->visible) {
             $titleattr .= ' dimmed_text';
         }
-        echo $this->output->heading(get_section_name($course, $sections[$displaysection]), 2, $titleattr, 'pagetitle');
+        echo $this->output->heading(get_section_name($course, $sectioninfo), 2, $titleattr, 'pagetitle');
         $this->action_menu($course, $sections[$displaysection], $sections, $modnames);
 
         // Now the list of sections..
         echo $this->start_section_list();
 
-        // The requested section page.
-        $thissection = $sections[$displaysection];
-        echo $this->section_header($thissection, $course, true, $displaysection);
+        echo $this->section_header($sectioninfo, $course, true, $displaysection);
         // Show completion help icon.
         $completioninfo = new completion_info($course);
         echo $completioninfo->display_help_icon();
 
-        print_section($course, $thissection, $mods, $modnamesused, true, '100%', false, $displaysection);
+        print_section($course, $sectioninfo, null, null, true, '100%', false, $displaysection);
         if ($PAGE->user_is_editing()) {
-            print_section_add_menus($course, $displaysection, $modnames, false, false, $displaysection);
+            print_section_add_menus($course, $displaysection, null, false, false, $displaysection);
         }
         echo $this->section_footer();
         echo $this->end_section_list();
