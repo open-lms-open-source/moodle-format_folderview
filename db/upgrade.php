@@ -58,5 +58,13 @@ function xmldb_format_folderview_upgrade($oldversion = 0) {
         // folderview savepoint reached
         upgrade_plugin_savepoint(true, 2012121700, 'format', 'folderview');
     }
+
+    if ($oldversion < 2013021200) {
+        // Remove coursedisplay format option
+        $DB->delete_records('course_format_options', array('format' => 'folderview', 'name' => 'coursedisplay'));
+
+        // folderview savepoint reached
+        upgrade_plugin_savepoint(true, 2013021200, 'format', 'folderview');
+    }
     return true;
 }
