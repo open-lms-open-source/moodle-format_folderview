@@ -65,3 +65,4 @@ $string['deletecoursedone'] = 'Deleted - Folder View';
 $string['viewalltopics'] = 'Return to the course page with a list of all the topics';
 $string['editsection'] = 'Edit {$a} settings';
 $string['mustselectresource'] = 'Failed to add resource because no resource type was selected.  Please go back and select a resource type before submitting.';
+$string['numberoftopics'] = 'Number of topics';

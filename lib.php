@@ -132,7 +132,7 @@ class format_folderview extends format_base {
             }
             $courseformatoptionsedit = array(
                 'numsections'    => array(
-                    'label'              => new lang_string('numberweeks'),
+                    'label'              => new lang_string('numberoftopics', 'format_folderview'),
                     'element_type'       => 'select',
                     'element_attributes' => array($sectionmenu),
                 ),
