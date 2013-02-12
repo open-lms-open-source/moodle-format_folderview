@@ -117,14 +117,6 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
 
         $coursecontext = context_course::instance($course->id);
-
-        if ($onsectionpage) {
-            $url = course_get_url($course, $section->section);
-        } else {
-            $url = course_get_url($course);
-        }
-        $url->param('sesskey', sesskey());
-
         $controls = array();
 
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
@@ -138,6 +130,13 @@ class format_folderview_renderer extends format_section_renderer_base {
             $controls[] = html_writer::link($url, $img, array('title' => get_string('editsection', 'format_folderview', $sectionname)));
         }
         if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
+            if ($onsectionpage) {
+                $url = course_get_url($course, $section->section);
+            } else {
+                $url = course_get_url($course);
+            }
+            $url->param('sesskey', sesskey());
+
             if ($course->marker == $section->section) { // Show the "light globe" on/off.
                 $url->param('marker', 0);
                 $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'), 'class' => 'icon ', 'alt' => get_string('markedthistopic')));
