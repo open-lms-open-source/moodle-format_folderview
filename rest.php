@@ -29,7 +29,7 @@ require_once(dirname(dirname(dirname(__DIR__))).'/config.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 $courseid         = required_param('courseid', PARAM_INT);
-$action           = required_param('action', PARAM_ACTION);
+$action           = required_param('action', PARAM_ALPHANUMEXT);
 $expandedsections = optional_param('expandedsections', '', PARAM_SEQUENCE);
 
 $PAGE->set_url(

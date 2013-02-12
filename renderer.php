@@ -91,7 +91,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         } else {
             $o = $this->output->pix_icon('folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview');
         }
-        if ($this->is_section_current($section, $course)) {
+        if (course_get_format($course)->is_section_current($section)) {
             $o .= get_accesshide(get_string('currentsection', 'format_'.$course->format));
         }
         return $o;

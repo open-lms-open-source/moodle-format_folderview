@@ -40,11 +40,27 @@ require_login($courseid, false, null, false, true);
 has_capability('moodle/course:update', $context);
 require_sesskey();
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = course_get_format($courseid)->get_course();
 $course->numsections++;
 
-$section = get_course_section($course->numsections, $course->id);
+$optionid = $DB->get_field('course_format_options', 'id', array('courseid' => $course->id, 'format' => 'folderview', 'sectionid' => 0, 'name' => 'numsections'));
+if (!empty($optionid)) {
+    $DB->set_field('course_format_options', 'value', $course->numsections, array('id' => $optionid));
+} else {
+    $DB->insert_record('course_format_options', (object) array(
+        'courseid' => $course->id,
+        'format' => 'folderview',
+        'sectionid' => 0,
+        'name' => 'numsections',
+        'value' => $course->numsections,
+    ));
+}
+
+course_create_sections_if_missing($course, range(0, $course->numsections));
+
+$modinfo = get_fast_modinfo($course);
+$section = $modinfo->get_section_info($course->numsections, MUST_EXIST);
 $DB->set_field('course_sections', 'name', $sectioname, array('id' => $section->id));
-$DB->set_field('course', 'numsections', $course->numsections, array('id' => $course->id));
+rebuild_course_cache($course->id);
 
 redirect(course_get_url($course, $section->section));
