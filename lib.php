@@ -22,93 +22,146 @@
  */
 
 /**
- * Indicates this format uses sections.
- *
- * @return bool Returns true
+ * @method format_folderview_renderer get_renderer(moodle_page $page)
  */
-function callback_folderview_uses_sections() {
-    return true;
-}
+class format_folderview extends format_base {
+    public function get_course() {
+        $course = parent::get_course();
+        $course->coursedisplay = COURSE_DISPLAY_SINGLEPAGE;
 
-/**
- * Used to display the course structure for a course where format=folderview
- *
- * This is called automatically by {@link load_course()} if the current course
- * format = weeks.
- *
- * @param global_navigation $navigation
- * @param stdClass $course
- * @param navigation_node $coursenode
- * @return bool Returns true
- */
-function callback_folderview_load_content(&$navigation, $course, $coursenode) {
-    return $navigation->load_generic_course_sections($course, $coursenode, 'folderview');
-}
-
-/**
- * The string that is used to describe a section of the course
- * e.g. Topic, Week...
- *
- * @return string
- */
-function callback_folderview_definition() {
-    return get_string('sectionname','format_folderview');
-}
-
-/**
- * The GET argument variable that is used to identify the section being
- * viewed by the user (if there is one)
- *
- * @return string
- */
-function callback_folderview_request_key() {
-    return 'folderview';
-}
-
-function callback_folderview_get_section_name($course, $section) {
-    // We can't add a node without any text
-    if (!empty($section->name)) {
-        return $section->name;
-    } else if ($section->section == 0) {
-        return get_string('section0name', 'format_folderview');
-    } else {
-        return get_string('sectionname','format_folderview').' '.$section->section;
+        return $course;
     }
-}
 
-/**
- * Declares support for course AJAX features
- *
- * @see course_format_ajax_support()
- * @return stdClass
- */
-function callback_folderview_ajax_support() {
-    $ajaxsupport = new stdClass();
-    $ajaxsupport->capable = true;
-    $ajaxsupport->testedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111, 'Safari' => 531, 'Chrome' => 6.0);
-    return $ajaxsupport;
-}
+    public function uses_sections() {
+        return true;
+    }
 
-/**
- * Callback function to do some action after section move
- *
- * @param stdClass $course The course entry from DB
- * @return array This will be passed in ajax respose.
- */
-function callback_folderview_ajax_section_move($course) {
-    global $COURSE, $PAGE;
+    public function get_section_name($section) {
+        $section = $this->get_section($section);
 
-    $titles = array();
-    $urls = array();
-    rebuild_course_cache($course->id);
-    $modinfo = get_fast_modinfo($COURSE);
-    $renderer = $PAGE->get_renderer('format_folderview');
-    if ($renderer && ($sections = $modinfo->get_section_info_all())) {
-        foreach ($sections as $number => $section) {
-            $titles[$number] = $renderer->section_title($section, $course);
+        if (!empty($section->name)) {
+            return format_string($section->name, true, array('context' => context_course::instance($this->courseid)));
+        } else if ($section->section == 0) {
+            return get_string('section0name', 'format_folderview');
         }
+        return get_string('sectionname', 'format_folderview').' '.$section->section;
     }
-    return array('sectiontitles' => $titles, 'action' => 'move');
+
+    public function supports_ajax() {
+        $ajaxsupport                 = new stdClass();
+        $ajaxsupport->capable        = true;
+        $ajaxsupport->testedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111, 'Safari' => 531, 'Chrome' => 6.0);
+        return $ajaxsupport;
+    }
+
+    public function ajax_section_move() {
+        global $PAGE;
+
+        $titles = array();
+        $course = $this->get_course();
+        $modinfo = get_fast_modinfo($course);
+        $renderer = $this->get_renderer($PAGE);
+        if ($renderer && ($sections = $modinfo->get_section_info_all())) {
+            foreach ($sections as $number => $section) {
+                $titles[$number] = $renderer->section_title($section, $course);
+            }
+        }
+        return array('sectiontitles' => $titles, 'action' => 'move');
+    }
+
+    public function extend_course_navigation($navigation, navigation_node $node) {
+        global $PAGE;
+
+        // if section is specified in course/view.php, make sure it is expanded in navigation
+        if ($navigation->includesectionnum === false) {
+            $selectedsection = optional_param('section', null, PARAM_INT);
+            if ($selectedsection !== null && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0') &&
+                $PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
+            ) {
+                $navigation->includesectionnum = $selectedsection;
+            }
+        }
+
+        parent::extend_course_navigation($navigation, $node);
+    }
+
+    public function course_format_options($foreditform = false) {
+        static $courseformatoptions = false;
+
+        if ($courseformatoptions === false) {
+            $courseconfig        = get_config('moodlecourse');
+            $courseformatoptions = array(
+                'numsections'    => array(
+                    'default' => $courseconfig->numsections,
+                    'type'    => PARAM_INT,
+                ),
+                'hiddensections' => array(
+                    'default' => $courseconfig->hiddensections,
+                    'type'    => PARAM_INT,
+                ),
+            );
+        }
+        if ($foreditform && !isset($courseformatoptions['numsections']['label'])) {
+            $courseconfig = get_config('moodlecourse');
+            $max          = $courseconfig->maxsections;
+            if (!isset($max) || !is_numeric($max)) {
+                $max = 52;
+            }
+            $sectionmenu = array();
+            for ($i = 0; $i <= $max; $i++) {
+                $sectionmenu[$i] = "$i";
+            }
+            $courseformatoptionsedit = array(
+                'numsections'    => array(
+                    'label'              => new lang_string('numberweeks'),
+                    'element_type'       => 'select',
+                    'element_attributes' => array($sectionmenu),
+                ),
+                'hiddensections' => array(
+                    'label'              => new lang_string('hiddensections'),
+                    'help'               => 'hiddensections',
+                    'help_component'     => 'moodle',
+                    'element_type'       => 'select',
+                    'element_attributes' => array(
+                        array(
+                            0 => new lang_string('hiddensectionscollapsed'),
+                            1 => new lang_string('hiddensectionsinvisible')
+                        )
+                    ),
+                ),
+            );
+            $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
+        }
+        return $courseformatoptions;
+    }
+
+    public function update_course_format_options($data, $oldcourse = null) {
+        global $DB;
+
+        if ($oldcourse !== null) {
+            $data      = (array) $data;
+            $oldcourse = (array) $oldcourse;
+            $options   = $this->course_format_options();
+            foreach ($options as $key => $unused) {
+                if (!array_key_exists($key, $data)) {
+                    if (array_key_exists($key, $oldcourse)) {
+                        $data[$key] = $oldcourse[$key];
+                    } else if ($key === 'numsections') {
+                        // If previous format does not have the field 'numsections'
+                        // and $data['numsections'] is not set,
+                        // we fill it with the maximum section number from the DB
+                        $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
+                            WHERE course = ?', array($this->courseid));
+                        if ($maxsection) {
+                            // If there are no sections, or just default 0-section, 'numsections' will be set to default
+                            $data['numsections'] = $maxsection;
+                        }
+                    }
+                }
+            }
+        }
+        return $this->update_format_options($data);
+    }
 }
 
 /**
