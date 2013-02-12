@@ -66,7 +66,7 @@ class format_folderview_renderer extends format_section_renderer_base {
     public function section_title($section, $course) {
         $title = get_section_name($course, $section);
         if ($section->uservisible) {
-            $url = course_get_url($course, $section->section, array('sr' => $section->section));
+            $url = course_get_url($course, $section->section, array('navigation' => true));
             if ($url) {
                 $title = html_writer::link($url, $title);
             }
@@ -84,7 +84,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             $expand   = get_string('sectionexpand', 'format_folderview', $sectionname);
             $collapse = get_string('sectioncollapse', 'format_folderview', $sectionname);
             $o = html_writer::link(
-                course_get_url($course, $section->section, array('sr' => $section->section)),
+                course_get_url($course, $section->section, array('navigation' => true)),
                 $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).html_writer::tag('span', $title, array('class' => 'accesshide')),
                 array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'class' => 'foldertoggle')
             );
@@ -105,7 +105,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         if ($section->uservisible) {
             $title      = get_string('showonlytopic', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
-            $onesection = html_writer::link(course_get_url($course, $section->section, array('sr' => $section->section)), $img, array('title' => $title));
+            $onesection = html_writer::link(course_get_url($course, $section->section, array('navigation' => true)), $img, array('title' => $title));
         } else {
             $onesection = '';
         }
@@ -131,7 +131,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
         if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
             if ($onsectionpage) {
-                $url = course_get_url($course, $section->section);
+                $url = course_get_url($course, $section->section, array('navigation' => true));
             } else {
                 $url = course_get_url($course);
             }

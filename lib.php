@@ -36,6 +36,25 @@ class format_folderview extends format_base {
         return true;
     }
 
+    public function get_view_url($section, $options = array()) {
+        if (!empty($options['navigation'])) {
+            if (array_key_exists('sr', $options)) {
+                $sectionno = $options['sr'];
+            } else if (is_object($section)) {
+                $sectionno = $section->section;
+            } else {
+                $sectionno = $section;
+            }
+            if ($sectionno !== null) {
+                return new moodle_url('/course/view.php', array(
+                    'id' => $this->get_courseid(),
+                    'section' => $sectionno
+                ));
+            }
+        }
+        return parent::get_view_url($section, $options);
+    }
+
     public function get_section_name($section) {
         $section = $this->get_section($section);
 
