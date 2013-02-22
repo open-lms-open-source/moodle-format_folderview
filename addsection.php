@@ -43,19 +43,9 @@ require_sesskey();
 $course = course_get_format($courseid)->get_course();
 $course->numsections++;
 
-$optionid = $DB->get_field('course_format_options', 'id', array('courseid' => $course->id, 'format' => 'folderview', 'sectionid' => 0, 'name' => 'numsections'));
-if (!empty($optionid)) {
-    $DB->set_field('course_format_options', 'value', $course->numsections, array('id' => $optionid));
-} else {
-    $DB->insert_record('course_format_options', (object) array(
-        'courseid' => $course->id,
-        'format' => 'folderview',
-        'sectionid' => 0,
-        'name' => 'numsections',
-        'value' => $course->numsections,
-    ));
-}
-
+course_get_format($course)->update_course_format_options(
+    array('numsections' => $course->numsections)
+);
 course_create_sections_if_missing($course, range(0, $course->numsections));
 
 $modinfo = get_fast_modinfo($course);
