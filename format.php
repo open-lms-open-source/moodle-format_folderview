@@ -55,29 +55,30 @@ if (!empty($displaysection)) {
     $renderer->print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection);
 } else {
     $renderer->print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused);
-}
 
-$pref = get_user_preferences("format_folderview_$course->id", '');
-$expandedsections = array();
-foreach (explode(',', $pref) as $expandedsection) {
-    foreach ($sections as $section) {
-        if ($section->id == $expandedsection) {
-            $expandedsections[] = $section->section;
-            break;
+    $pref     = get_user_preferences("format_folderview_$course->id", '');
+    $expanded = array();
+    foreach (explode(',', $pref) as $expandedsection) {
+        foreach ($sections as $section) {
+            if ($section->id == $expandedsection) {
+                $expanded[] = $section->section;
+                break;
+            }
         }
     }
+
+    $PAGE->requires->yui_module(
+        'moodle-format_folderview-sectiontoggle',
+        'M.format_folderview.init_sectiontoggle',
+        array(array(
+            'courseid'         => $course->id,
+            'ajaxurl'          => $CFG->wwwroot.'/course/format/folderview/rest.php',
+            'expandedsections' => $expanded,
+        ))
+    );
 }
 
 $PAGE->requires->js('/course/format/folderview/format.js');
-$PAGE->requires->yui_module(
-    'moodle-format_folderview-sectiontoggle',
-    'M.format_folderview.init_sectiontoggle',
-    array(array(
-        'courseid'         => $course->id,
-        'ajaxurl'          => $CFG->wwwroot.'/course/format/folderview/rest.php',
-        'expandedsections' => $expandedsections,
-    ))
-);
 
 if ($PAGE->user_is_editing()) {
     $PAGE->requires->yui_module(
