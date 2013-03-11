@@ -78,21 +78,48 @@ M.course.format.swap_sections = function(Y, node1, node2) {
  */
 M.course.format.process_sections = function(Y, sectionlist, response, sectionfrom, sectionto) {
     var CSS = {
-        SECTIONNAME: 'sectionname',
-        ONESECTIONIMAGE: '.right.side .icon.one'
+        SECTIONNAME: 'sectionname'
+    },
+    SELECTORS = {
+        SECTIONLEFTSIDE: '.left .section-handle img',
+        SECTIONURL: '.' + CSS.SECTIONNAME + ' a',
+        ONESECTIONIMAGE: '.right.side .icon.one',
+        TOGGLELINK: '.left.side .foldertoggle'
     };
 
     if (response.action == 'move') {
-        // update titles in all affected sections
+        // If moving up swap around 'sectionfrom' and 'sectionto' so the that loop operates.
+        if (sectionfrom > sectionto) {
+            var temp = sectionto;
+            sectionto = sectionfrom;
+            sectionfrom = temp;
+        }
+
+        // Update titles and move icons in all affected sections.
+        var ele, str, stridx, newstr;
+
         for (var i = sectionfrom; i <= sectionto; i++) {
-            sectionlist.item(i).one('.' + CSS.SECTIONNAME).setContent(response.sectiontitles[i]);
-            var url = sectionlist.item(i).one('.' + CSS.SECTIONNAME + ' a').get('href');
-            var onesectionimg = sectionlist.item(i).one(CSS.ONESECTIONIMAGE);
+            // Update section title.
+            sectionlist.item(i).one('.'+CSS.SECTIONNAME).setContent(response.sectiontitles[i]);
+            // Update move icon.
+            ele = sectionlist.item(i).one(SELECTORS.SECTIONLEFTSIDE);
+            str = ele.getAttribute('alt');
+            stridx = str.lastIndexOf(' ');
+            newstr = str.substr(0, stridx +1) + i;
+            ele.setAttribute('alt', newstr);
+            ele.setAttribute('title', newstr); // For FireFox as 'alt' is not refreshed.
+
+            // Update folder icon.
+            var url = sectionlist.item(i).one(SELECTORS.SECTIONURL).get('href');
+            var onesectionimg = sectionlist.item(i).one(SELECTORS.ONESECTIONIMAGE);
+            var togglelink = sectionlist.item(i).one(SELECTORS.TOGGLELINK);
             if (url && onesectionimg) {
-                var onesectionlink = onesectionimg.get('parentNode');
-                if (onesectionlink && onesectionlink.get('nodeName').toLowerCase() === 'a') {
-                    onesectionlink.set('href', url);
+                if (onesectionimg.get('parentNode').test('a')) {
+                    onesectionimg.get('parentNode').set('href', url);
                 }
+            }
+            if (togglelink) {
+                togglelink.set('href', url);
             }
         }
     }
