@@ -13,6 +13,7 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
             ADDRESOURCETAB: '#tab_addResource a[role=button]',
             ADDRESOURCEDIALOG: '#addResource',
             ADDRESOURCELINK: '.restype a',
+            ADDRESOURCELINKWRAPPER: '.addreslink',
             ADDRESOURCEHIDDEN: '#addResourceHidden',
             ADDRESOURCEANCHOR: 'a[name=' + ADD_RESOURCE_ANCHOR + ']',
             DIALOGLABEL: '.dialoglabel'
@@ -159,10 +160,8 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                 handle_add_resource: function(e) {
                     e.preventDefault();
 
-                    Y.one(CSS.ADDRESOURCEHIDDEN).set(
-                        'value',
-                        e.target.get('id').replace('add_mod_', '')
-                    );
+                    var node = e.target.ancestor(CSS.ADDRESOURCELINKWRAPPER);
+                    Y.one(CSS.ADDRESOURCEHIDDEN).set('value', node.getData('modname'));
                     e.target.ancestor('form').submit();
                 },
 

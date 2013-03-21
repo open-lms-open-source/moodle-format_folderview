@@ -433,7 +433,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             if (!isset($fieldsets[$catname])) {
                 $fieldsets[$catname] = array();
             }
-            $itemhtml = '<div id="add_'.$modkey.'" class="restype addreslink"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
+            $itemhtml = '<div id="add_'.$modkey.'" class="restype addreslink" data-modname="'.$modtype->type.'"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
             $itemhtml .= '<div id="add_'.$modkey.'" class="addresradio"><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</label></div>';
 
             //Add item html its categories array
