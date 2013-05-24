@@ -30,8 +30,8 @@
  */
 
 $plugin->version  = 2013021200;
-$plugin->requires = 2011120503;
+$plugin->requires = 2012062503;
 $plugin->component = 'format_folderview';
-$plugin->release = '2.2.0 (Build: 20120712)';
+$plugin->release = '2.3.0 (Build: 20121228)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array('local_mr' => 2010090200);
