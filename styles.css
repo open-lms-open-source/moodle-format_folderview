@@ -147,6 +147,11 @@
     float: left;
 }
 
+/* Make room for the move widget on the left */
+#page-course-view-folderview.editing li.activity .mod-indent {
+    margin-left: 20px;
+}
+
 /* Drag-n-drop Section Handle CSS */
 .editing.jsenabled .course-content ul.folderview li.section .left a {
     float: right;
