@@ -407,7 +407,28 @@ class format_folderview_renderer extends format_section_renderer_base {
         $strresources  = get_string('resources', 'format_folderview');
         $stractivities = get_string('activities');
         $straddtotopic = get_string('addtotopic', 'format_folderview');
-        $modtypes = format_folderview_get_course_resource_types($course, $section->section, $modnames);
+
+        $mods      = get_module_metadata($course, $modnames, $section->section);
+        $fieldsets = array($stractivities => array(), $strresources => array());
+        foreach ($mods as $mod) {
+            if ($mod->archetype != MOD_ARCHETYPE_RESOURCE and $mod->archetype != MOD_ARCHETYPE_SYSTEM) {
+                if (!empty($mod->types)) {
+                    if (!array_key_exists($mod->title, $fieldsets)) {
+                        $fieldsets[$mod->title] = array();
+                    }
+                    foreach ($mod->types as $type) {
+                        if (empty($type->icon)) {
+                            $type->icon = $mod->icon;
+                        }
+                        $fieldsets[$mod->title][] = $this->add_activity($type);
+                    }
+                } else {
+                    $fieldsets[$stractivities][] = $this->add_activity($mod);
+                }
+            } else if ($mod->archetype == MOD_ARCHETYPE_RESOURCE) {
+                $fieldsets[$strresources][] = $this->add_activity($mod);
+            }
+        }
 
         echo '<div id="addResource" class="dialog" tabindex="-1" role="region">';
         echo html_writer::link('#', '', array('name' => 'jumpto_addResource', 'aria-hidden' => 'true', 'tabindex' => '-1'));
@@ -416,29 +437,6 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo '<input type="hidden" name="id" value="'.$course->id.'" />';
         echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
         echo '<input id="addResourceHidden" type="hidden" name="add" value="" />';
-
-        $fieldsets = array('Activities' => array(), 'Assignments' => array(), 'Resources' => array());
-
-        foreach ($modtypes as $modkey => $modtype) {
-
-            $name = $modtype->name;
-            $catname = $strresources;
-
-            if ($modtype->isactivity) {
-                $catname = $stractivities;
-            }
-            if ($modtype->groupname != '') {
-                $catname = $modtype->groupname;
-            }
-            if (!isset($fieldsets[$catname])) {
-                $fieldsets[$catname] = array();
-            }
-            $itemhtml = '<div id="add_'.$modkey.'" class="restype addreslink" data-modname="'.$modtype->type.'"><a href="#" id="add_mod_'.$modtype->type.'" title="'.s($modtype->helptext).'"><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</a></div>';
-            $itemhtml .= '<div id="add_'.$modkey.'" class="addresradio"><label><input type="radio" name="add" value="'.$modtype->type.'" /><img src="'.$this->output->pix_url('icon', $modtype->modname).'" alt="" border="0" hspace="2" />'.$name.'</label></div>';
-
-            //Add item html its categories array
-            array_push($fieldsets[$catname], $itemhtml);
-        }
 
         $output      = "";
         $itemspercol = floor(get_string('itemspercolumn', 'format_folderview'));
@@ -483,6 +481,40 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo '</div>';
 
         echo '<div class="clearfix"></div></form></div>'; //close addResource
+    }
+
+    /**
+     * HTML for adding an activity folderview style
+     *
+     * @param object $mod
+     * @return string
+     */
+    protected function add_activity($mod) {
+        if (empty($mod->help)) {
+            $mod->help = get_string('nohelpforactivityorresource', 'moodle');
+        }
+        $options              = new stdClass();
+        $options->trusted     = false;
+        $options->noclean     = false;
+        $options->smiley      = false;
+        $options->filter      = false;
+        $options->para        = true;
+        $options->newlines    = false;
+        $options->overflowdiv = false;
+
+        $help = format_text($mod->help, FORMAT_MARKDOWN, $options);
+        $help = html_to_text($help);
+        $link = html_writer::link('#', $mod->icon.' '.$mod->title, array('title' => $help, 'id' => 'add_mod_'.$mod->name));
+
+        $output = html_writer::tag('div', $link, array('class' => 'restype addreslink', 'data-modname' => $mod->name));
+
+        $radioid = html_writer::random_id('addradio');
+        $radio   = html_writer::empty_tag('input', array('type' => 'radio', 'name' => 'add', 'value' => $mod->name, 'id' => $radioid));
+        $label   = html_writer::label($mod->icon.' '.$mod->title, $radioid, false);
+
+        $output .= html_writer::tag('div', $radio.$label, array('class' => 'addresradio'));
+
+        return $output;
     }
 
     /**
