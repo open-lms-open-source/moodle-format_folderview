@@ -148,7 +148,7 @@
 }
 
 /* Make room for the move widget on the left */
-#page-course-view-folderview.editing li.activity .mod-indent {
+#page-course-view-folderview.editing li.activity .mod-indent-0 {
     margin-left: 20px;
 }
 

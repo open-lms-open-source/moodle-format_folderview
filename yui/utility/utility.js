@@ -25,7 +25,8 @@ YUI.add('moodle-format_folderview-utility', function(Y) {
         var CSS = {
             EDITINGMOVESELECTOR: 'ul.folderview li.section li.activity .commands .editing_move',
             ACTIVITY: 'li.activity',
-            SECTIONS: 'ul.folderview li.section'
+            SECTIONS: 'ul.folderview li.section',
+            MOD: '.mod-indent'
         };
 
         var UTILITYNAME = 'format_folderview_utility';
@@ -60,6 +61,12 @@ YUI.add('moodle-format_folderview-utility', function(Y) {
                     Y.all(CSS.EDITINGMOVESELECTOR).each(function(node) {
                         var parent = node.ancestor(CSS.ACTIVITY);
                         parent.insertBefore(node, parent.get('firstChild'));
+
+                        // We add mod-indent-0 so our move icon can get some space.
+                        var mod = parent.one(CSS.MOD);
+                        if (mod.getAttribute('class').search('mod-indent-') === -1) {
+                            mod.addClass('mod-indent-0');
+                        }
                     });
                 }
             },
