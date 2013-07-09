@@ -244,3 +244,5 @@
 #page-course-view-folderview.jsenabled #addResource .addresradio {
     display: none;
 }
+
+.format-folderview .block_settings .block_tree .tree_item.modchoosertoggle {display:none;}
