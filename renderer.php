@@ -509,14 +509,19 @@ class format_folderview_renderer extends format_section_renderer_base {
         $options->newlines    = false;
         $options->overflowdiv = false;
 
+        if (!empty($mod->type)) {
+            $data = str_replace('&amp;', '&', $mod->type);;
+        } else {
+            $data = $mod->name;
+        }
         $help = format_text($mod->help, FORMAT_MARKDOWN, $options);
         $help = html_to_text($help);
         $link = html_writer::link('#', $mod->icon.' '.$mod->title, array('title' => $help, 'id' => 'add_mod_'.$mod->name));
 
-        $output = html_writer::tag('div', $link, array('class' => 'restype addreslink', 'data-modname' => $mod->name));
+        $output = html_writer::tag('div', $link, array('class' => 'restype addreslink', 'data-modname' => $data));
 
         $radioid = html_writer::random_id('addradio');
-        $radio   = html_writer::empty_tag('input', array('type' => 'radio', 'name' => 'add', 'value' => $mod->name, 'id' => $radioid));
+        $radio   = html_writer::empty_tag('input', array('type' => 'radio', 'name' => 'add', 'value' => $data, 'id' => $radioid));
         $label   = html_writer::label($mod->icon.' '.$mod->title, $radioid, false);
 
         $output .= html_writer::tag('div', $radio.$label, array('class' => 'addresradio'));
