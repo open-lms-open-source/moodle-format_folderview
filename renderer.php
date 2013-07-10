@@ -157,6 +157,10 @@ class format_folderview_renderer extends format_section_renderer_base {
     }
 
     public function print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused) {
+        // Passed sections is not always correct.
+        $modinfo  = get_fast_modinfo($course);
+        $sections = $modinfo->get_section_info_all();
+
         echo html_writer::start_tag('div', array('class' => 'multi-section'));
         echo $this->all_sections_visibility_toggles();
         echo $this->output->heading(get_section_name($course, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
@@ -179,6 +183,9 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         $modinfo = get_fast_modinfo($course);
         $course = course_get_format($course)->get_course();
+
+        // Passed sections is not always correct.
+        $sections = $modinfo->get_section_info_all();
 
         // Can we view the section in question?
         if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
