@@ -248,40 +248,38 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         echo html_writer::start_tag('div', array('class' => 'section-navigation mdl-bottom'));
         echo html_writer::tag('div', $viewallurl, array('class' => 'viewall'));
-        echo $this->jumpto_menu($course, $sections);
+        echo $this->section_nav_selection($course, $sections, $displaysection);
         echo html_writer::end_tag('div');
 
         // close single-section div.
         echo html_writer::end_tag('div');
     }
 
-    /**
-     * @param stdClass $course
-     * @param section_info[] $sections
-     * @return string
-     */
-    public function jumpto_menu($course, $sections) {
-        $sectionmenu = array();
-        foreach ($sections as $section) {
-            if ($section->section > $course->numsections) {
-                continue;
-            } else if ($section->section == 0) {
-                $sectionmenu[0] = get_string('section0name', 'format_folderview');
-            } else if ($section->uservisible) {
-                $sectionmenu[$section->section] = get_section_name($course, $section);
-            }
-        }
-        if (count($sectionmenu) > 1) {
-            $select         = new single_select(new moodle_url('/course/view.php', array('id' => $course->id)), 'section', $sectionmenu);
-            $select->label  = get_string('jumpto');
-            $select->class  = 'jumpmenu';
-            $select->formid = 'sectionmenu';
+    protected function section_nav_selection($course, $sections, $displaysection) {
 
-            return $this->output->render($select);
-        } else {
-            $select = null;
+        $courseurl = new moodle_url('/course/view.php', array('id' => $course->id, 'section' => '0'));
+
+        $o = '';
+        $sectionmenu = array();
+        $sectionmenu[$courseurl->out(false)] = get_string('section0name', 'format_folderview');
+        $modinfo = get_fast_modinfo($course);
+        $section = 1;
+        while ($section <= $course->numsections) {
+            $thissection = $modinfo->get_section_info($section);
+            $showsection = $thissection->uservisible or !$course->hiddensections;
+            if (($showsection) && ($section != $displaysection)) {
+                $courseurl->param('section', $section);
+                $sectionmenu[$courseurl->out(false)] = get_section_name($course, $section);
+            }
+            $section++;
         }
-        return '';
+
+        $select = new url_select($sectionmenu, '', array('' => get_string('jumpto')));
+        $select->class = 'jumpmenu';
+        $select->formid = 'sectionmenu';
+        $o .= $this->output->render($select);
+
+        return $o;
     }
 
     /**
