@@ -233,9 +233,11 @@ class format_folderview_renderer extends format_section_renderer_base {
         $completioninfo = new completion_info($course);
         echo $completioninfo->display_help_icon();
 
-        print_section($course, $sectioninfo, null, null, true, '100%', false, $displaysection);
+        $courserenderer = $PAGE->get_renderer('core', 'course');
+        echo $courserenderer->course_section_cm_list($course, $sectioninfo, $displaysection);
         if ($PAGE->user_is_editing()) {
-            print_section_add_menus($course, $displaysection, null, false, false, $displaysection);
+            echo $courserenderer->course_section_add_cm_control($course, $displaysection, null,
+                array('inblock' => false));
         }
         echo $this->section_footer();
         echo $this->end_section_list();
