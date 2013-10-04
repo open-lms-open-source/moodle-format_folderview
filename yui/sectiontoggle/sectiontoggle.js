@@ -86,6 +86,9 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                         var sectionName = node.one(CSS.SECTIONNAME);
                         var control = node.one(CSS.TOGGLETARGET);
 
+                        if (Y.Lang.isNull(control)) {
+                            return; // Missing control node, don't process.
+                        }
                         sectionContent.plug(M.local_mr.ariacontrolled, {
                             ariaLabelledBy: sectionName,
                             ariaState: 'aria-expanded',
