@@ -211,7 +211,7 @@ function format_folderview_delete_course($courseid, $showfeedback = false) {
  * @param int $currentsection The current section number to be displayed
  */
 function format_folderview_display_section($course, $currentsection) {
-    global $DB;
+    global $DB, $PAGE;
 
     $section   = optional_param('section', -1, PARAM_INT);
     $topic     = optional_param('topic', -1, PARAM_INT);
@@ -237,7 +237,12 @@ function format_folderview_display_section($course, $currentsection) {
         }
     }
     if ($section != $currentsection) {
-        redirect(new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section)));
+        $url = new moodle_url('/course/view.php', array('id' => $course->id, 'section' => $section));
+        $switchrole = optional_param('switchrole', -1, PARAM_INT);
+        if (($switchrole == 0) && confirm_sesskey()) {
+            $url->params(array('switchrole' => $switchrole, 'sesskey' => sesskey()));
+        }
+        redirect($url);
     }
 }
 
