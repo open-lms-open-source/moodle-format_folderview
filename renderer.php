@@ -540,30 +540,30 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
         $missingblocks = $this->page->blocks->get_addable_blocks();
         if (empty($missingblocks)) {
-            return get_string('noblockstoaddhere');
-        }
-
-        $menu = array();
-        foreach ($missingblocks as $block) {
-            $blockobject = block_instance($block->name);
-            if ($blockobject !== false && $blockobject->user_can_addto($this->page)) {
-                $menu[$block->name] = $blockobject->get_title();
+            $output = get_string('noblockstoaddhere');
+        } else {
+            $menu = array();
+            foreach ($missingblocks as $block) {
+                $blockobject = block_instance($block->name);
+                if ($blockobject !== false && $blockobject->user_can_addto($this->page)) {
+                    $menu[$block->name] = $blockobject->get_title();
+                }
             }
-        }
-        collatorlib::asort($menu);
+            collatorlib::asort($menu);
 
-        foreach ($menu as $blockname => $blocktitle) {
-            $menu[$blockname] = html_writer::link(new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname)), $blocktitle);
-            $menu[$blockname] = html_writer::tag('div', $menu[$blockname]);
-        }
-        $output = html_writer::tag('span', get_string('addblock', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
+            foreach ($menu as $blockname => $blocktitle) {
+                $menu[$blockname] = html_writer::link(new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname)), $blocktitle);
+                $menu[$blockname] = html_writer::tag('div', $menu[$blockname]);
+            }
+            $output = html_writer::tag('span', get_string('addblock', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
 
-        $size = ceil(count($menu) / 3);
+            $size = ceil(count($menu) / 3);
 
-        foreach (array_chunk($menu, $size) as $chunk) {
-            $output .= html_writer::tag('div', implode('', $chunk), array('class' => 'column'));
+            foreach (array_chunk($menu, $size) as $chunk) {
+                $output .= html_writer::tag('div', implode('', $chunk), array('class' => 'column'));
+            }
+            $output .= html_writer::tag('div', '&nbsp;', array('class' => 'clearfix'));
         }
-        $output .= html_writer::tag('div', '&nbsp;', array('class' => 'clearfix'));
         return html_writer::tag('div', $output, array('id' => 'addBlock', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
     }
 }

@@ -83,6 +83,9 @@ YUI.add('moodle-format_folderview-menu', function(Y) {
                         var tabPanelId = tab.get('parentNode').get('id').replace('tab_', '');
                         var tabPanel = Y.one('#' + tabPanelId);
 
+                        if (tabPanel === null) {
+                            return;
+                        }
                         tabPanel.plug(M.local_mr.ariacontrolled, {
                             ariaLabelledBy: tabPanel.one(CSS.DIALOGLABEL),
                             ariaState: 'aria-hidden'
