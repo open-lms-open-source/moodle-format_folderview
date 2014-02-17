@@ -85,8 +85,4 @@ if ($PAGE->user_is_editing()) {
         'moodle-format_folderview-menu',
         'M.format_folderview.init_menu'
     );
-    $PAGE->requires->yui_module(
-        'moodle-format_folderview-utility',
-        'M.format_folderview.init_utility'
-    );
 }
