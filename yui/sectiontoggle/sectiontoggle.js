@@ -191,7 +191,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     if (!section.test(CSS.SECTION)) {
                         section = section.ancestor(CSS.SECTION);
                     }
-                    if (section) {
+                    if (section && this.get_section_number(section) !== 0) {
                         if (!section.hasClass('expanded')) {
                             section.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
                             this.save_expanded_sections();
