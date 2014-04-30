@@ -67,6 +67,7 @@ if (!empty($displaysection)) {
         }
     }
 
+    $PAGE->requires->strings_for_js(array('topicexpanded', 'topiccollapsed'), 'format_folderview');
     $PAGE->requires->yui_module(
         'moodle-format_folderview-sectiontoggle',
         'M.format_folderview.init_sectiontoggle',

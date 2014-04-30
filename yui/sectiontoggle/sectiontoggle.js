@@ -92,6 +92,7 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                         sectionContent.plug(M.local_mr.ariacontrolled, {
                             ariaLabelledBy: sectionName,
                             ariaState: 'aria-expanded',
+                            tabIndex: null,
                             autoHideShow: false,
                             autoFocus: false
                         });
@@ -132,23 +133,17 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                 },
 
                 /**
-                 * Set the focus on the passed section
-                 * @param node
-                 */
-                focus_on_section: function(node) {
-                    if (node && node.hasClass('expanded')) {
-                        node.one(CSS.SECTIONCONTENT).local_mr_ariacontrolled.focus();
-                    }
-                },
-
-                /**
                  * Event handler for when a user clicks on a section folder
                  * @param e
                  */
                 handle_section_toggle: function(e) {
                     e.preventDefault();
                     var section = e.target.ancestor(CSS.SECTION);
-                    this.focus_on_section(section);
+                    if (section && section.hasClass('expanded')) {
+                        this.get('liveLog').log_text(M.str.format_folderview.topicexpanded);
+                    } else if (section && !section.hasClass('expanded')) {
+                        this.get('liveLog').log_text(M.str.format_folderview.topiccollapsed);
+                    }
                     this.save_expanded_sections();
                 },
 
@@ -295,6 +290,12 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
                     },
                     expandedsections: {
                         'value': []
+                    },
+                    liveLog: {
+                        readOnly: true,
+                        valueFn: function() {
+                            return M.local_mr.init_livelog();
+                        }
                     }
                 }
             });
@@ -304,6 +305,6 @@ YUI.add('moodle-format_folderview-sectiontoggle', function(Y) {
         }
     },
     '@VERSION@', {
-        requires: ['base', 'event', 'io', 'moodle-local_mr-ariacontrol', 'moodle-local_mr-ariacontrolled']
+        requires: ['base', 'event', 'io', 'moodle-local_mr-ariacontrol', 'moodle-local_mr-ariacontrolled', 'moodle-local_mr-livelog']
     }
 );
