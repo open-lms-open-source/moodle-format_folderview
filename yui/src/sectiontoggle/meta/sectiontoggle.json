@@ -1,0 +1,12 @@
+{
+    "moodle-format_folderview-sectiontoggle": {
+        "requires": [
+            "base",
+            "event",
+            "io",
+            "moodle-local_mr-ariacontrol",
+            "moodle-local_mr-ariacontrolled",
+            "moodle-local_mr-livelog"
+        ]
+    }
+}

@@ -72,7 +72,7 @@ if (!empty($displaysection)) {
         'moodle-format_folderview-sectiontoggle',
         'M.format_folderview.init_sectiontoggle',
         array(array(
-            'courseid'         => $course->id,
+            'courseid'         => (int) $course->id,
             'ajaxurl'          => $CFG->wwwroot.'/course/format/folderview/rest.php',
             'expandedsections' => $expanded,
         ))
