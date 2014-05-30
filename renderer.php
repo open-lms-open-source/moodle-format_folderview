@@ -86,7 +86,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             $o = html_writer::link(
                 course_get_url($course, $section->section, array('navigation' => true)),
                 $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).html_writer::tag('span', $title, array('class' => 'accesshide')),
-                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'class' => 'foldertoggle')
+                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'aria-hidden' => 'true', 'role' => 'button', 'class' => 'foldertoggle')
             );
         } else {
             $o = $this->output->pix_icon('folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview');
@@ -294,8 +294,8 @@ class format_folderview_renderer extends format_section_renderer_base {
         $strexpandall   = get_string('expandall', 'format_folderview');
         $strcollapseall = get_string('collapseall', 'format_folderview');
         $url            = new moodle_url('#');
-        $expandicon     = $this->output->pix_icon('t/switch_plus', $strexpandall);
-        $collapseicon   = $this->output->pix_icon('t/switch_minus', $strcollapseall);
+        $expandicon     = $this->output->pix_icon('t/switch_plus', '');
+        $collapseicon   = $this->output->pix_icon('t/switch_minus', '');
 
         $output  = html_writer::link($url, $expandicon.get_accesshide($strexpandall), array('class' => 'expand-sections', 'role' => 'button'));
         $output .= html_writer::link($url, $collapseicon.get_accesshide($strcollapseall), array('class' => 'collapse-sections', 'role' => 'button'));

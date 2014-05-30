@@ -33,10 +33,7 @@ var CSS = {
     MAINWRAPPER: '.course-content ul.folderview',
     ALLSECTIONS: '.course-content ul.folderview li.section',
     SECTION: 'li.section',
-    SECTIONACTIVITIES: 'ul.section',
-    SECTIONCONTENT: '.content',
-    SECTIONSUMMARY: '.summary',
-    SECTIONNAME: '.sectionname',
+    SECTIONNAMELINK: '.sectionname a',
     TOGGLETARGET: '.left.side .foldertoggle',
     EXPANDALL: '#topiclinktop .expand-sections',
     COLLAPSEALL: '#topiclinktop .collapse-sections'
@@ -114,13 +111,12 @@ Y.extend(SECTIONTOGGLE, Y.Base,
         initializer: function() {
             var sections = Y.all(CSS.ALLSECTIONS);
 
-            // Initialize aria
-            this.init_aria_attributes(sections);
+            this.init_section_attributes(sections);
 
-            // Setup our watcher for clicks
+            // Setup our watcher for clicks.
             var wrapperNode = Y.one(CSS.MAINWRAPPER);
             if (wrapperNode) {
-                wrapperNode.delegate('click', this.handle_section_toggle, CSS.TOGGLETARGET, this);
+                wrapperNode.delegate('click', this.handle_section_toggle, CSS.TOGGLETARGET + ', ' + CSS.SECTIONNAMELINK, this);
             }
             var expandNode = Y.one(CSS.EXPANDALL);
             if (expandNode) {
@@ -139,95 +135,112 @@ Y.extend(SECTIONTOGGLE, Y.Base,
          * Sets up aria attributes for expand/collapse sections
          * @param sections
          */
-        init_aria_attributes: function(sections) {
+        init_section_attributes: function(sections) {
             if (sections.isEmpty()) {
                 return;
             }
-            var sectionContentIds = [];
             sections.each(function(node) {
-                var sectionnum = this.get_section_number(node);
-                if (sectionnum === 0) {
-                    return;
+                // Expand the section if set in user preference.
+                if (Y.Array.indexOf(this.get('expandedsections'), this.get_section_number(node)) !== -1) {
+                    this.expand_section(node);
+                } else {
+                    this.collapse_section(node);
                 }
-                var sectionContent = node.one(CSS.SECTIONCONTENT);
-                var sectionName = node.one(CSS.SECTIONNAME);
-                var control = node.one(CSS.TOGGLETARGET);
-
-                if (Y.Lang.isNull(control)) {
-                    return; // Missing control node, don't process.
-                }
-                if (control.local_mr_ariacontrol !== undefined) {
-                    return; // Already wired up.
-                }
-                Y.log('Wiring up section number: ' + sectionnum, 'debug', SECTIONTOGGLE.NAME);
-
-                sectionContent.plug(M.local_mr.ariacontrolled, {
-                    ariaLabelledBy: sectionName,
-                    ariaState: 'aria-expanded',
-                    tabIndex: null,
-                    autoHideShow: false,
-                    autoFocus: false
-                });
-                control.plug(M.local_mr.ariacontrol, { ariaControls: sectionContent });
-
-                // Need to run extra code after toggle
-                control.local_mr_ariacontrol.on('afterToggle', function(e) {
-                    this.toggle_section_classes(
-                        e.target.get('host').ancestor(CSS.SECTION)
-                    );
-                }, this);
-
-                // Expand the section if set in user pref
-                if (Y.Array.indexOf(this.get('expandedsections'), sectionnum) !== -1) {
-                    control.local_mr_ariacontrol.toggle_state();
-                }
-                sectionContentIds.push(sectionContent.generateID());
             }, this);
-
-            this.init_aria_attributes_toggle_all(sectionContentIds);
         },
 
         /**
-         * Updates aria-controls on the expand/collapse all buttons
-         * @param sectionContentIds
+         * Determine if we should ignore this section or not
+         * @param section
+         * @returns {Boolean}
          */
-        init_aria_attributes_toggle_all: function(sectionContentIds) {
-            var collapseNode = Y.one(CSS.COLLAPSEALL);
-            var expandNode = Y.one(CSS.EXPANDALL);
-            var idCSV = sectionContentIds.join(',');
+        ignore_section: function(section) {
+            return (!section || section.hasClass('orphaned') || this.get_section_number(section) === 0);
+        },
 
-            if (collapseNode) {
-                collapseNode.setAttribute('aria-controls', idCSV);
+        /**
+         * Toggles a section
+         * @param section
+         */
+        toggle_section: function(section) {
+            if (this.ignore_section(section)) {
+                return;
             }
-            if (expandNode) {
-                expandNode.setAttribute('aria-controls', idCSV);
+            if (section.hasClass('expanded')) {
+                this.collapse_section(section);
+            } else {
+                this.expand_section(section);
             }
+        },
+
+        /**
+         * Collapses a section
+         * @param section
+         */
+        collapse_section: function(section) {
+            if (this.ignore_section(section)) {
+                return;
+            }
+            Y.log('Collapsing section number: ' + this.get_section_number(section), 'debug', SECTIONTOGGLE.NAME);
+
+            section.removeClass('expanded');
+            this.update_section_labels(section, 'before-aria-label');
+        },
+
+        /**
+         * Expands a section
+         * @param section
+         */
+        expand_section: function(section) {
+            if (this.ignore_section(section)) {
+                return;
+            }
+            Y.log('Expanding section number: ' + this.get_section_number(section), 'debug', SECTIONTOGGLE.NAME);
+
+            section.addClass('expanded');
+            this.update_section_labels(section, 'after-aria-label');
+        },
+
+        /**
+         * Update folder and section link to say either
+         * "Expand topic X" or "Collapse topic X"
+         * @param section
+         * @param {String} dataAttribute The data attribute name to use
+         */
+        update_section_labels: function(section, dataAttribute) {
+            var folder = section.one(CSS.TOGGLETARGET);
+            var link   = section.one(CSS.SECTIONNAMELINK);
+
+            if (!folder) {
+                return; // This guy has the goods!
+            }
+            var nodes = [folder];
+            if (link) {
+                nodes.push(link);
+            }
+            var nodeList = new Y.NodeList(nodes);
+
+            nodeList.setAttribute('aria-label', folder.getData(dataAttribute))
+                .setAttribute('title', folder.getData(dataAttribute));
         },
 
         /**
          * Event handler for when a user clicks on a section folder
+         * or section link
          * @param e
          */
         handle_section_toggle: function(e) {
             e.preventDefault();
 
             var section = e.target.ancestor(CSS.SECTION);
-
-            if (section) {
-                var control = section.one(CSS.TOGGLETARGET);
-                if (!Y.Lang.isNull(control) && control.local_mr_ariacontrol === undefined) {
-                    // Section has somehow not been wired up, do it now.
-                    this.init_aria_attributes(Y.all(CSS.ALLSECTIONS));
-
-                    // We need to now toggle the state since it wasn't wired in the first place.
-                    if (control.local_mr_ariacontrol !== undefined) {
-                        control.local_mr_ariacontrol.toggle_state();
-                    }
-                }
+            if (this.ignore_section(section)) {
+                return;
             }
-            if (section && section.hasClass('expanded')) {
+            this.toggle_section(section);
+
+            if (section.hasClass('expanded')) {
                 this.get('liveLog').log_text(M.str.format_folderview.topicexpanded);
-            } else if (section && !section.hasClass('expanded')) {
+            } else {
                 this.get('liveLog').log_text(M.str.format_folderview.topiccollapsed);
             }
             this.save_expanded_sections();
@@ -239,11 +252,12 @@ Y.extend(SECTIONTOGGLE, Y.Base,
          */
         handle_expand_all: function(e) {
             e.preventDefault();
+
             Y.all(CSS.ALLSECTIONS).each(function(node) {
-                if (!node.hasClass('expanded') && this.get_section_number(node) !== 0) {
-                    node.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
-                }
+                this.expand_section(node);
             }, this);
+
+            this.get('liveLog').log_text(M.str.format_folderview.alltopicsexpanded);
 
             this.save_expanded_sections();
         },
@@ -254,11 +268,12 @@ Y.extend(SECTIONTOGGLE, Y.Base,
          */
         handle_collapse_all: function(e) {
             e.preventDefault();
+
             Y.all(CSS.ALLSECTIONS).each(function(node) {
-                if (node.hasClass('expanded') && this.get_section_number(node) !== 0) {
-                    node.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
-                }
+                this.collapse_section(node);
             }, this);
+
+            this.get('liveLog').log_text(M.str.format_folderview.alltopicscollapsed);
 
             this.save_expanded_sections();
         },
@@ -272,42 +287,9 @@ Y.extend(SECTIONTOGGLE, Y.Base,
             if (!section.test(CSS.SECTION)) {
                 section = section.ancestor(CSS.SECTION);
             }
-            if (section && this.get_section_number(section) !== 0) {
-                if (!section.hasClass('expanded')) {
-                    section.one(CSS.TOGGLETARGET).local_mr_ariacontrol.toggle_state();
-                    this.save_expanded_sections();
-                } else {
-                    // Bug fix - this element can be created dynamically when
-                    // the section is empty, add our precious class...
-                    var activities = section.one(CSS.SECTIONACTIVITIES);
-                    if (activities && !activities.hasClass('expanded')) {
-                        activities.addClass('expanded');
-                    }
-                }
-            }
-        },
-
-        /**
-         * Toggles section classes for when a section is expanded or not
-         * @param section
-         */
-        toggle_section_classes: function(section) {
-            if (section) {
-                var nodes = [section, section.one(CSS.SECTIONSUMMARY)];
-                var sectionActivities = section.one(CSS.SECTIONACTIVITIES);
-                if (sectionActivities) {
-                    nodes.push(sectionActivities);
-                }
-                var nodeList = new Y.NodeList(nodes);
-
-                // Only trust section's class
-                if (section.hasClass('expanded')) {
-                    nodeList.removeClass('expanded');
-                } else {
-                    nodeList.addClass('expanded');
-                }
-            } else {
-                Y.log('Section node does not exist', 'debug', SECTIONTOGGLE.NAME);
+            if (section && !section.hasClass('expanded')) {
+                this.expand_section(section);
+                this.save_expanded_sections();
             }
         },
 
@@ -359,13 +341,4 @@ M.format_folderview.init_sectiontoggle = function(config) {
 };
 
 
-}, '@VERSION@', {
-    "requires": [
-        "base",
-        "event",
-        "io",
-        "moodle-local_mr-ariacontrol",
-        "moodle-local_mr-ariacontrolled",
-        "moodle-local_mr-livelog"
-    ]
-});
+}, '@VERSION@', {"requires": ["base", "event", "io", "moodle-local_mr-livelog"]});
