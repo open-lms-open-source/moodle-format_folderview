@@ -41,22 +41,24 @@ class format_folderview extends format_base {
     }
 
     public function get_view_url($section, $options = array()) {
-        if (!empty($options['navigation'])) {
-            if (array_key_exists('sr', $options)) {
-                $sectionno = $options['sr'];
-            } else if (is_object($section)) {
-                $sectionno = $section->section;
+        $url       = new moodle_url('/course/view.php', array('id' => $this->get_courseid()));
+        $sr        = array_key_exists('sr', $options) ? (int) $options['sr'] : null;
+        $sectionno = (int) (is_object($section) ? $section->section : $section);
+
+        if (!is_null($sr)) {
+            if ($sr === 0) {
+                // Return to all sections and focus on passed section.
+                $url->param('section', 0);
+                $url->set_anchor('section-'.$sectionno);
             } else {
-                $sectionno = $section;
+                // Return to specific section.
+                $url->param('section', $sr);
             }
-            if ($sectionno !== null) {
-                return new moodle_url('/course/view.php', array(
-                    'id' => $this->get_courseid(),
-                    'section' => $sectionno
-                ));
-            }
+        } else {
+            // URL to view a section.
+            $url->param('section', $sectionno);
         }
-        return parent::get_view_url($section, $options);
+        return $url;
     }
 
     public function get_section_name($section) {
@@ -94,6 +96,9 @@ class format_folderview extends format_base {
 
     public function extend_course_navigation($navigation, navigation_node $node) {
         global $PAGE;
+
+        // Update course URL to force viewing of all sections.
+        $node->action = course_get_url($PAGE->course, 0);
 
         // if section is specified in course/view.php, make sure it is expanded in navigation
         if ($navigation->includesectionnum === false) {
