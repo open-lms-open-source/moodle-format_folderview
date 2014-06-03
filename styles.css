@@ -131,27 +131,6 @@
     padding-top: 1px;
 }
 
-/* Activity Edit Widgets */
-#page-course-view-folderview.editing li.activity .commands {
-    z-index: 999;
-    display: inline-block;
-    padding: 5px;
-    margin: 0 3px;
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-/* We move the "move" widget to the left, so float it so things stay inline */
-#page-course-view-folderview.editing .editing_move {
-    float: left;
-}
-
-/* Make room for the move widget on the left */
-#page-course-view-folderview.editing li.activity .mod-indent-0 {
-    margin-left: 20px;
-}
-
 /* Drag-n-drop Section Handle CSS */
 .editing.jsenabled .course-content ul.folderview li.section .left a {
     float: right;

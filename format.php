@@ -67,11 +67,12 @@ if (!empty($displaysection)) {
         }
     }
 
+    $PAGE->requires->strings_for_js(array('topicexpanded', 'topiccollapsed'), 'format_folderview');
     $PAGE->requires->yui_module(
         'moodle-format_folderview-sectiontoggle',
         'M.format_folderview.init_sectiontoggle',
         array(array(
-            'courseid'         => $course->id,
+            'courseid'         => (int) $course->id,
             'ajaxurl'          => $CFG->wwwroot.'/course/format/folderview/rest.php',
             'expandedsections' => $expanded,
         ))
@@ -84,9 +85,5 @@ if ($PAGE->user_is_editing()) {
     $PAGE->requires->yui_module(
         'moodle-format_folderview-menu',
         'M.format_folderview.init_menu'
-    );
-    $PAGE->requires->yui_module(
-        'moodle-format_folderview-utility',
-        'M.format_folderview.init_utility'
     );
 }

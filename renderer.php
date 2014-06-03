@@ -427,6 +427,9 @@ class format_folderview_renderer extends format_section_renderer_base {
                         if (empty($type->icon)) {
                             $type->icon = $mod->icon;
                         }
+                        if (empty($type->name)) {
+                            $type->name = $mod->name;
+                        }
                         $fieldsets[$mod->title][] = $this->add_activity($type);
                     }
                 } else {
@@ -549,7 +552,7 @@ class format_folderview_renderer extends format_section_renderer_base {
                     $menu[$block->name] = $blockobject->get_title();
                 }
             }
-            collatorlib::asort($menu);
+            core_collator::asort($menu);
 
             foreach ($menu as $blockname => $blocktitle) {
                 $menu[$blockname] = html_writer::link(new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname)), $blocktitle);
