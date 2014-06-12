@@ -27,17 +27,6 @@
 .course-content ul.folderview li.section .left {width:40px;float:left;text-align:center;}
 .course-content ul.folderview li.section .right {width:40px;float:right;text-align:center;}
 
-/* Hide section zero on single page view */
-.course-content ul.folderview {
-    display: none;
-}
-
-/* Ensure these are never hidden by the above style */
-.course-content .multi-section ul.folderview,
-.course-content .single-section ul.folderview {
-    display: inherit;
-}
-
 /* Section expand/collapse toggle */
 .course-content ul.folderview .expanded img.folder_icon {
     background-image: url([[pix:format_folderview|folder_open]]);
@@ -68,11 +57,6 @@
 .course-content ul.folderview #section-0 .summary,
 .course-content ul.folderview #section-0 ul.section li.activity {
     display: block;
-}
-
-/* The view all sections link */
-.format-folderview .viewall {
-    float: right;
 }
 
 /* Section title */
