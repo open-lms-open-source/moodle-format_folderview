@@ -59,9 +59,9 @@ if (!empty($displaysection)) {
     $pref     = get_user_preferences("format_folderview_$course->id", '');
     $expanded = array();
     foreach (explode(',', $pref) as $expandedsection) {
-        foreach ($sections as $section) {
-            if ($section->id == $expandedsection) {
-                $expanded[] = $section->section;
+        foreach ($sections as $folderviewsection) {
+            if ($folderviewsection->id == $expandedsection) {
+                $expanded[] = $folderviewsection->section;
                 break;
             }
         }
