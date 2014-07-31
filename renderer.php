@@ -291,13 +291,13 @@ class format_folderview_renderer extends format_section_renderer_base {
         $strexpandall   = get_string('expandall', 'format_folderview');
         $strcollapseall = get_string('collapseall', 'format_folderview');
         $url            = new moodle_url('#');
-        $expandicon     = $this->output->pix_icon('t/switch_plus', '');
-        $collapseicon   = $this->output->pix_icon('t/switch_minus', '');
+        $expandicon     = $this->output->pix_icon('t/switch_plus', $strexpandall);
+        $collapseicon   = $this->output->pix_icon('t/switch_minus', $strcollapseall);
 
-        $output  = html_writer::link($url, $expandicon.get_accesshide($strexpandall),
-            array('class' => 'expand-sections', 'role' => 'button', 'title' => $strexpandall));
-        $output .= html_writer::link($url, $collapseicon.get_accesshide($strcollapseall),
-            array('class' => 'collapse-sections', 'role' => 'button', 'title' => $strcollapseall));
+        $output  = html_writer::link($url, $expandicon,
+            array('class' => 'expand-sections', 'role' => 'button'));
+        $output .= html_writer::link($url, $collapseicon,
+            array('class' => 'collapse-sections', 'role' => 'button'));
 
         return html_writer::tag('div', $output, array('id' => 'topiclinktop', 'class' => 'topiclistlink'));
     }
