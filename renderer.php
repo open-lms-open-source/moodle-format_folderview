@@ -66,7 +66,7 @@ class format_folderview_renderer extends format_section_renderer_base {
     public function section_title($section, $course) {
         $title = get_section_name($course, $section);
         if ($section->uservisible) {
-            $url = course_get_url($course, $section->section, array('navigation' => true));
+            $url = course_get_url($course, $section->section);
             if ($url) {
                 $title = html_writer::link($url, $title);
             }
@@ -84,9 +84,9 @@ class format_folderview_renderer extends format_section_renderer_base {
             $expand   = get_string('sectionexpand', 'format_folderview', $sectionname);
             $collapse = get_string('sectioncollapse', 'format_folderview', $sectionname);
             $o = html_writer::link(
-                course_get_url($course, $section->section, array('navigation' => true)),
+                course_get_url($course, $section->section),
                 $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).html_writer::tag('span', $title, array('class' => 'accesshide')),
-                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'class' => 'foldertoggle')
+                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'aria-hidden' => 'true', 'role' => 'button', 'class' => 'foldertoggle')
             );
         } else {
             $o = $this->output->pix_icon('folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview');
@@ -105,7 +105,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         if ($section->uservisible) {
             $title      = get_string('showonlytopic', 'format_folderview', $sectionname);
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
-            $onesection = html_writer::link(course_get_url($course, $section->section, array('navigation' => true)), $img, array('title' => $title));
+            $onesection = html_writer::link(course_get_url($course, $section->section), $img, array('title' => $title));
         } else {
             $onesection = '';
         }
@@ -125,13 +125,13 @@ class format_folderview_renderer extends format_section_renderer_base {
             $controls[] = html_writer::link('#jumpto_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
         }
         if (has_capability('moodle/course:update', $coursecontext)) {
-            $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => $section->section));
+            $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => ($onsectionpage) ? $section->section : 0));
             $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'class' => 'icon edit', 'alt' => get_string('edit')));
             $controls[] = html_writer::link($url, $img, array('title' => get_string('editsection', 'format_folderview', $sectionname)));
         }
         if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
             if ($onsectionpage) {
-                $url = course_get_url($course, $section->section, array('navigation' => true));
+                $url = course_get_url($course, $section->section);
             } else {
                 $url = course_get_url($course);
             }
@@ -169,18 +169,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo html_writer::end_tag('div');
     }
 
-
-    /**
-     * @param stdClass $course
-     * @param section_info[] $sections
-     * @param array $mods
-     * @param array $modnames
-     * @param array $modnamesused
-     * @param int $displaysection
-     */
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
-        global $PAGE;
-
         $modinfo = get_fast_modinfo($course);
         $course = course_get_format($course)->get_course();
 
@@ -210,56 +199,64 @@ class format_folderview_renderer extends format_section_renderer_base {
         // Start single-section div
         echo html_writer::start_tag('div', array('class' => 'single-section'));
 
-        $viewallicon = $this->output->action_icon(
-            new moodle_url('/course/view.php', array('id' => $course->id, 'section' => 0)),
-            new pix_icon('all', get_string('viewalltopics', 'format_folderview'), 'format_folderview')
-        );
+        // The requested section page.
+        $thissection = $modinfo->get_section_info($displaysection);
 
-        echo $this->output->box($viewallicon, 'topiclistlink', 'topiclinktop');
-
+        // Title with section navigation links.
+        $sectionnavlinks = $this->get_nav_links($course, $modinfo->get_section_info_all(), $displaysection);
+        $sectiontitle = '';
+        $sectiontitle .= html_writer::start_tag('div', array('class' => 'section-navigation navigationtitle'));
+        $sectiontitle .= html_writer::tag('span', $sectionnavlinks['previous'], array('class' => 'mdl-left'));
+        $sectiontitle .= html_writer::tag('span', $sectionnavlinks['next'], array('class' => 'mdl-right'));
         // Title attributes
-        $titleattr = 'mdl-align title headingblock header outline pagetitle';
-        if (!$sectioninfo->visible) {
-            $titleattr .= ' dimmed_text';
+        $classes = 'sectionname';
+        if (!$thissection->visible) {
+            $classes .= ' dimmed_text';
         }
-        echo $this->output->heading(get_section_name($course, $sectioninfo), 2, $titleattr, 'pagetitle');
+        $sectiontitle .= $this->output->heading(get_section_name($course, $displaysection), 3, $classes);
+
+        $sectiontitle .= html_writer::end_tag('div');
+        echo $sectiontitle;
+
         $this->action_menu($course, $sections[$displaysection], $sections, $modnames);
 
         // Now the list of sections..
         echo $this->start_section_list();
 
-        echo $this->section_header($sectioninfo, $course, true, $displaysection);
+        echo $this->section_header($thissection, $course, true, $displaysection);
         // Show completion help icon.
         $completioninfo = new completion_info($course);
         echo $completioninfo->display_help_icon();
 
-        $courserenderer = $PAGE->get_renderer('core', 'course');
-        echo $courserenderer->course_section_cm_list($course, $sectioninfo, $displaysection);
-        if ($PAGE->user_is_editing()) {
-            echo $courserenderer->course_section_add_cm_control($course, $displaysection, null,
-                array('inblock' => false));
-        }
+        echo $this->courserenderer->course_section_cm_list($course, $thissection, $displaysection);
+        echo $this->courserenderer->course_section_add_cm_control($course, $displaysection, $displaysection);
         echo $this->section_footer();
         echo $this->end_section_list();
 
+        // Display section bottom navigation.
         $viewallurl = html_writer::link(
-            new moodle_url('/course/view.php', array('id' => $course->id, 'section' => 0)),
+            course_get_url($course, 0),
             get_string('section0name', 'format_folderview'),
             array('title' => get_string('viewalltopics', 'format_folderview'))
         );
 
-        echo html_writer::start_tag('div', array('class' => 'section-navigation mdl-bottom'));
-        echo html_writer::tag('div', $viewallurl, array('class' => 'viewall'));
-        echo $this->section_nav_selection($course, $sections, $displaysection);
-        echo html_writer::end_tag('div');
+        $sectionbottomnav = '';
+        $sectionbottomnav .= html_writer::start_tag('div', array('class' => 'section-navigation mdl-bottom'));
+        $sectionbottomnav .= html_writer::tag('span', $sectionnavlinks['previous'], array('class' => 'mdl-left'));
+        $sectionbottomnav .= html_writer::tag('span', $sectionnavlinks['next'], array('class' => 'mdl-right'));
+        $sectionbottomnav .= html_writer::tag('div', $this->section_nav_selection($course, $sections, $displaysection),
+            array('class' => 'mdl-align'));
+        $sectionbottomnav .= html_writer::div($viewallurl, 'viewall mdl-right');
+        $sectionbottomnav .= html_writer::end_tag('div');
+        echo $sectionbottomnav;
 
-        // close single-section div.
+        // Close single-section div.
         echo html_writer::end_tag('div');
     }
 
     protected function section_nav_selection($course, $sections, $displaysection) {
 
-        $courseurl = new moodle_url('/course/view.php', array('id' => $course->id, 'section' => '0'));
+        $courseurl = course_get_url($course, 0);
 
         $o = '';
         $sectionmenu = array();
@@ -297,8 +294,10 @@ class format_folderview_renderer extends format_section_renderer_base {
         $expandicon     = $this->output->pix_icon('t/switch_plus', $strexpandall);
         $collapseicon   = $this->output->pix_icon('t/switch_minus', $strcollapseall);
 
-        $output  = html_writer::link($url, $expandicon.get_accesshide($strexpandall), array('class' => 'expand-sections', 'role' => 'button'));
-        $output .= html_writer::link($url, $collapseicon.get_accesshide($strcollapseall), array('class' => 'collapse-sections', 'role' => 'button'));
+        $output  = html_writer::link($url, $expandicon,
+            array('class' => 'expand-sections', 'role' => 'button'));
+        $output .= html_writer::link($url, $collapseicon,
+            array('class' => 'collapse-sections', 'role' => 'button'));
 
         return html_writer::tag('div', $output, array('id' => 'topiclinktop', 'class' => 'topiclistlink'));
     }

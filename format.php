@@ -59,15 +59,21 @@ if (!empty($displaysection)) {
     $pref     = get_user_preferences("format_folderview_$course->id", '');
     $expanded = array();
     foreach (explode(',', $pref) as $expandedsection) {
-        foreach ($sections as $section) {
-            if ($section->id == $expandedsection) {
-                $expanded[] = $section->section;
+        foreach ($sections as $folderviewsection) {
+            if ($folderviewsection->id == $expandedsection) {
+                $expanded[] = $folderviewsection->section;
                 break;
             }
         }
     }
 
-    $PAGE->requires->strings_for_js(array('topicexpanded', 'topiccollapsed'), 'format_folderview');
+    $PAGE->requires->strings_for_js(array(
+        'topicexpanded',
+        'topiccollapsed',
+        'alltopicsexpanded',
+        'alltopicscollapsed'
+    ), 'format_folderview');
+
     $PAGE->requires->yui_module(
         'moodle-format_folderview-sectiontoggle',
         'M.format_folderview.init_sectiontoggle',
