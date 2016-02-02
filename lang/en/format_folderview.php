@@ -43,6 +43,7 @@ $string['addtotopic'] = 'Add To';
 $string['close'] = 'Close';
 $string['collapseall'] = 'Collapse all topics';
 $string['currentsection'] = 'Current topic';
+$string['deletesection'] = 'Delete topic';
 $string['expandall'] = 'Expand all topics';
 $string['sectionexpand'] = 'Expand topic {$a}';
 $string['sectioncollapse'] = 'Collapse topic {$a}';
