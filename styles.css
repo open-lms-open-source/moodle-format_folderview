@@ -60,8 +60,13 @@
 }
 
 /* Section title */
-#page-course-view-folderview .content h3:first-child {
-    margin: 6px;
+#page-course-view-folderview h3.sectionname {
+    margin-top: 3px;
+    margin-right: 130px;
+}
+
+#page-course-view-folderview h3.sectionname > a {
+    margin-left: 6px;
 }
 
 /* Expand/Collapse all section switches */
