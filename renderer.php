@@ -97,39 +97,45 @@ class format_folderview_renderer extends format_section_renderer_base {
         return $o;
     }
 
-    protected function section_edit_controls($course, $section, $onsectionpage = false) {
+    protected function section_right_content($section, $course, $onsectionpage) {
         global $PAGE;
 
-        $sectionname = get_section_name($course, $section);
+        $rightcontent = parent::section_right_content($section, $course, $onsectionpage);
 
-        if ($section->uservisible) {
-            $title      = get_string('showonlytopic', 'format_folderview', $sectionname);
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
-            $onesection = html_writer::link(course_get_url($course, $section->section), $img, array('title' => $title));
-        } else {
-            $onesection = '';
+        if (!$PAGE->user_is_editing() && !$onsectionpage && $section->uservisible) {
+            $sectionname = get_section_name($course, $section);
+            $title       = get_string('showonlytopic', 'format_folderview', $sectionname);
+            $attributes  = ['src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title];
+            $img         = html_writer::empty_tag('img', $attributes);
+            $rightcontent .= html_writer::link(course_get_url($course, $section->section), $img, ['title' => $title]);
         }
+
+        return $rightcontent;
+    }
+
+    protected function section_edit_control_items($course, $section, $onsectionpage = false) {
+        global $PAGE;
+
         if (!$PAGE->user_is_editing()) {
-            if (!$onsectionpage and !empty($onesection)) {
-                return array($onesection);
-            }
-            return array();
+            return [];
         }
 
         $coursecontext = context_course::instance($course->id);
+        $isstealth = $section->section > $course->numsections;
         $controls = array();
 
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
-            $title      = get_string('sectionaddresource', 'format_folderview', $sectionname);
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
-            $controls[] = html_writer::link('#jumpto_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
+            $title           = get_string('sectionaddresource', 'format_folderview');
+            $controls['add'] = [
+                'url'     => '#jumpto_addResource',
+                'icon'    => 't/add',
+                'name'    => $title,
+                'pixattr' => ['class' => '', 'alt' => $title],
+                'attr'    => ['class' => 'icon add add_widget', 'title' => $title],
+            ];
         }
-        if (has_capability('moodle/course:update', $coursecontext)) {
-            $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => ($onsectionpage) ? $section->section : 0));
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'class' => 'icon edit', 'alt' => get_string('edit')));
-            $controls[] = html_writer::link($url, $img, array('title' => get_string('editsection', 'format_folderview', $sectionname)));
-        }
-        if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
+
+        if (!$isstealth && $section->section && has_capability('moodle/course:setcurrentsection', $coursecontext)) {
             if ($onsectionpage) {
                 $url = course_get_url($course, $section->section);
             } else {
@@ -137,22 +143,43 @@ class format_folderview_renderer extends format_section_renderer_base {
             }
             $url->param('sesskey', sesskey());
 
-            if ($course->marker == $section->section) { // Show the "light globe" on/off.
+            if ($course->marker == $section->section) {  // Show the "light globe" on/off.
                 $url->param('marker', 0);
-                $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'), 'class' => 'icon ', 'alt' => get_string('markedthistopic')));
-                $controls[] = html_writer::link($url, $img, array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
+                $markedthistopic       = get_string('markedthistopic');
+                $highlightoff          = get_string('highlightoff');
+                $controls['highlight'] = [
+                    'url'     => $url,
+                    "icon"    => 'i/marked',
+                    'name'    => $highlightoff,
+                    'pixattr' => ['class' => '', 'alt' => $markedthistopic],
+                    'attr'    => ['class' => 'editing_highlight', 'title' => $markedthistopic]
+                ];
             } else {
                 $url->param('marker', $section->section);
-                $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'), 'class' => 'icon', 'alt' => get_string('markthistopic')));
-                $controls[] = html_writer::link($url, $img, array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
+                $markthistopic         = get_string('markthistopic');
+                $highlight             = get_string('highlight');
+                $controls['highlight'] = [
+                    'url'     => $url,
+                    "icon"    => 'i/marker',
+                    'name'    => $highlight,
+                    'pixattr' => ['class' => '', 'alt' => $markthistopic],
+                    'attr'    => ['class' => 'editing_highlight', 'title' => $markthistopic]
+                ];
             }
         }
-        if (!$onsectionpage and !empty($onesection)) {
-            $controls[] = $onesection;
+        if (!$onsectionpage && $section->section && $section->uservisible) {
+            $title                  = get_string('showonly', 'format_folderview');
+            $controls['onesection'] = [
+                'url'     => course_get_url($course, $section->section),
+                'icon'    => 't/viewdetails',
+                'name'    => $title,
+                'pixattr' => ['class' => '', 'alt' => $title],
+                'attr'    => ['class' => 'icon one', 'title' => $title],
+            ];
         }
 
         return array_reverse(
-            array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage))
+            array_merge($controls, parent::section_edit_control_items($course, $section, $onsectionpage))
         );
     }
 

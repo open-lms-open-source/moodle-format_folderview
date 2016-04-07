@@ -74,13 +74,15 @@
     float: right;
 }
 
+#page-course-view-folderview #topiclinktop img {
+    padding-left: 5px;
+}
+
 /* Hide standard elements not used by folderview */
 #page-course-view-folderview .course-content #changenumsections,
-.course-content .single-section ul.folderview .right .icon.edit,
 .course-content ul.folderview #section-0 .sectionname,
 .course-content ul.folderview li.section .left br,
 .course-content ul.folderview li.section .right br,
-.course-content ul.folderview .summary img.edit,
 .course-content ul.folderview .addresourcemodchooser {
     display: none;
 }
@@ -113,39 +115,23 @@
     font-weight: bold;
 }
 
-/* Section edit widgets */
-.course-content .multi-section ul.folderview li.section .right.side {
-    float: right;
-    width: auto;
-    padding-right: 5px;
-}
-
-.course-content .multi-section ul.folderview li.section .right.side a,
-.course-content .multi-section ul.folderview li.section .right.side img {
-    display: inline-block;
-    float: right;
-    padding-right: 4px;
-    padding-top: 1px;
-}
-
 /* Drag-n-drop Section Handle CSS */
 .editing.jsenabled .course-content ul.folderview li.section .left a {
     float: right;
 }
+
 .editing.jsenabled .course-content ul.folderview li.section .left span {
     margin-top: 6px;
     display: block;
 }
 
+.editing.jsenabled .course-content ul.folderview li.section .left .section-handle img {
+    padding: 5px;
+}
+
 .editing.jsenabled .course-content ul.folderview li.section .left {
     width: 70px;
     max-width: 70px;
-}
-
-/* Single section view, the view all icon in the top */
-#page-course-view-folderview .single-section .topiclistlink {
-    float: right;
-    padding: 0.5em 0.5em 0;
 }
 
 /* All tab/panel CSS */
