@@ -1,24 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Folder View Course Format
+ * Library methods.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see http://opensource.org/licenses/gpl-3.0.html.
- *
+ * @package   format_folderview
  * @copyright Copyright (c) 2009 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @license http://opensource.org/licenses/gpl-3.0.html GNU Public License
- * @package format_folderview
- * @author David Mills
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -100,7 +101,7 @@ class format_folderview extends format_base {
         // Update course URL to force viewing of all sections.
         $node->action = course_get_url($PAGE->course, 0);
 
-        // if section is specified in course/view.php, make sure it is expanded in navigation
+        // If section is specified in course/view.php, make sure it is expanded in navigation.
         if ($navigation->includesectionnum === false) {
             $selectedsection = optional_param('section', null, PARAM_INT);
             if ($selectedsection !== null && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0') &&
@@ -176,12 +177,12 @@ class format_folderview extends format_base {
                         $data[$key] = $oldcourse[$key];
                     } else if ($key === 'numsections') {
                         // If previous format does not have the field 'numsections'
-                        // and $data['numsections'] is not set,
-                        // we fill it with the maximum section number from the DB
+                        // and 'numsections' is not set,
+                        // we fill it with the maximum section number from the DB.
                         $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
                             WHERE course = ?', array($this->courseid));
                         if ($maxsection) {
-                            // If there are no sections, or just default 0-section, 'numsections' will be set to default
+                            // If there are no sections, or just default 0-section, 'numsections' will be set to default.
                             $data['numsections'] = $maxsection;
                         }
                     }
@@ -252,7 +253,7 @@ function format_folderview_display_section($course, $currentsection) {
         $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
 
         // If the user cannot view, go to all sections or they will see
-        // infinite error loop
+        // infinite error loop.
         if (!$sectioninfo->uservisible) {
             $section = 0;
         }
@@ -283,11 +284,12 @@ function format_folderview_course_get_display($courseid) {
 
     if (!isset($USER->display[$courseid])) {
         if (isloggedin() and !isguestuser()) {
-            if (!$display = $DB->get_field('format_folderview_display', 'display', array('userid' => $USER->id, 'course' => $courseid))) {
-                $display = 0; // all sections option is not stored in DB, this makes the table much smaller
+            $conditions = ['userid' => $USER->id, 'course' => $courseid];
+            if (!$display = $DB->get_field('format_folderview_display', 'display', $conditions)) {
+                $display = 0; // All sections option is not stored in DB, this makes the table much smaller.
             }
         }
-        //use display cache for one course only - we need to keep session small
+        // Use display cache for one course only - we need to keep session small.
         $USER->display = array($courseid => $display);
     }
 
@@ -311,12 +313,13 @@ function format_folderview_course_set_display($courseid, $display) {
     }
     if (isloggedin() and !isguestuser()) {
         if ($display == 0) {
-            //show all, do not store anything in database
+            // Show all, do not store anything in database.
             $DB->delete_records('format_folderview_display', array('userid' => $USER->id, 'course' => $courseid));
 
         } else {
             if ($DB->record_exists('format_folderview_display', array('userid' => $USER->id, 'course' => $courseid))) {
-                $DB->set_field('format_folderview_display', 'display', $display, array('userid' => $USER->id, 'course' => $courseid));
+                $DB->set_field('format_folderview_display', 'display', $display,
+                    array('userid' => $USER->id, 'course' => $courseid));
             } else {
                 $record          = new stdClass();
                 $record->userid  = $USER->id;
@@ -327,7 +330,7 @@ function format_folderview_course_set_display($courseid, $display) {
         }
     }
 
-    //use display cache for one course only - we need to keep session small
+    // Use display cache for one course only - we need to keep session small.
     $USER->display = array($courseid => $display);
 
     return $display;

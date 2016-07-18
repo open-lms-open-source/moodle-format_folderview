@@ -1,25 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Folder View Course Format
+ * Renderer.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see http://opensource.org/licenses/gpl-3.0.html.
- *
+ * @package   format_folderview
  * @copyright Copyright (c) 2009 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @license http://opensource.org/licenses/gpl-3.0.html GNU Public License
- * @package format_folderview
- * @author David Mills
- * @author Mark Nielsen
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -85,11 +85,15 @@ class format_folderview_renderer extends format_section_renderer_base {
             $collapse = get_string('sectioncollapse', 'format_folderview', $sectionname);
             $o = html_writer::link(
                 course_get_url($course, $section->section),
-                $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).html_writer::tag('span', $title, array('class' => 'accesshide')),
-                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse, 'aria-hidden' => 'true', 'role' => 'button', 'class' => 'foldertoggle')
+                $this->output->pix_icon('spacer', '', 'format_folderview', array('class' => 'folder_icon')).
+                html_writer::tag('span', $title, array('class' => 'accesshide')),
+                array('title' => $title, 'data-before-aria-label' => $expand, 'data-after-aria-label' => $collapse,
+                      'aria-hidden' => 'true', 'role' => 'button', 'class' => 'foldertoggle')
             );
         } else {
-            $o = $this->output->pix_icon('folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview');
+            $o = $this->output->pix_icon(
+                'folder', get_string('sectionnotavailable', 'format_folderview', $sectionname), 'format_folderview'
+            );
         }
         if (course_get_format($course)->is_section_current($section)) {
             $o .= get_accesshide(get_string('currentsection', 'format_'.$course->format));
@@ -97,39 +101,45 @@ class format_folderview_renderer extends format_section_renderer_base {
         return $o;
     }
 
-    protected function section_edit_controls($course, $section, $onsectionpage = false) {
+    protected function section_right_content($section, $course, $onsectionpage) {
         global $PAGE;
 
-        $sectionname = get_section_name($course, $section);
+        $rightcontent = parent::section_right_content($section, $course, $onsectionpage);
 
-        if ($section->uservisible) {
-            $title      = get_string('showonlytopic', 'format_folderview', $sectionname);
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title));
-            $onesection = html_writer::link(course_get_url($course, $section->section), $img, array('title' => $title));
-        } else {
-            $onesection = '';
+        if ($section->section != 0 && !$PAGE->user_is_editing() && !$onsectionpage && $section->uservisible) {
+            $sectionname = get_section_name($course, $section);
+            $title       = get_string('showonlytopic', 'format_folderview', $sectionname);
+            $attributes  = ['src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title];
+            $img         = html_writer::empty_tag('img', $attributes);
+            $rightcontent .= html_writer::link(course_get_url($course, $section->section), $img, ['title' => $title]);
         }
+
+        return $rightcontent;
+    }
+
+    protected function section_edit_control_items($course, $section, $onsectionpage = false) {
+        global $PAGE;
+
         if (!$PAGE->user_is_editing()) {
-            if (!$onsectionpage and !empty($onesection)) {
-                return array($onesection);
-            }
-            return array();
+            return [];
         }
 
         $coursecontext = context_course::instance($course->id);
+        $isstealth = $section->section > $course->numsections;
         $controls = array();
 
         if (!$onsectionpage and has_capability('moodle/course:manageactivities', $coursecontext)) {
-            $title      = get_string('sectionaddresource', 'format_folderview', $sectionname);
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/add'), 'class' => 'icon add', 'alt' => $title));
-            $controls[] = html_writer::link('#jumpto_addResource', $img, array('title' => $title, 'class' => 'add_widget'));
+            $title           = get_string('sectionaddresource', 'format_folderview');
+            $controls['add'] = [
+                'url'     => '#jumpto_addResource',
+                'icon'    => 't/add',
+                'name'    => $title,
+                'pixattr' => ['class' => '', 'alt' => $title],
+                'attr'    => ['class' => 'icon add add_widget', 'title' => $title],
+            ];
         }
-        if (has_capability('moodle/course:update', $coursecontext)) {
-            $url        = new moodle_url('/course/editsection.php', array('id' => $section->id, 'sr' => ($onsectionpage) ? $section->section : 0));
-            $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'class' => 'icon edit', 'alt' => get_string('edit')));
-            $controls[] = html_writer::link($url, $img, array('title' => get_string('editsection', 'format_folderview', $sectionname)));
-        }
-        if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
+
+        if (!$isstealth && $section->section && has_capability('moodle/course:setcurrentsection', $coursecontext)) {
             if ($onsectionpage) {
                 $url = course_get_url($course, $section->section);
             } else {
@@ -137,22 +147,43 @@ class format_folderview_renderer extends format_section_renderer_base {
             }
             $url->param('sesskey', sesskey());
 
-            if ($course->marker == $section->section) { // Show the "light globe" on/off.
+            if ($course->marker == $section->section) {  // Show the "light globe" on/off.
                 $url->param('marker', 0);
-                $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'), 'class' => 'icon ', 'alt' => get_string('markedthistopic')));
-                $controls[] = html_writer::link($url, $img, array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
+                $markedthistopic       = get_string('markedthistopic');
+                $highlightoff          = get_string('highlightoff');
+                $controls['highlight'] = [
+                    'url'     => $url,
+                    "icon"    => 'i/marked',
+                    'name'    => $highlightoff,
+                    'pixattr' => ['class' => '', 'alt' => $markedthistopic],
+                    'attr'    => ['class' => 'editing_highlight', 'title' => $markedthistopic]
+                ];
             } else {
                 $url->param('marker', $section->section);
-                $img        = html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'), 'class' => 'icon', 'alt' => get_string('markthistopic')));
-                $controls[] = html_writer::link($url, $img, array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
+                $markthistopic         = get_string('markthistopic');
+                $highlight             = get_string('highlight');
+                $controls['highlight'] = [
+                    'url'     => $url,
+                    "icon"    => 'i/marker',
+                    'name'    => $highlight,
+                    'pixattr' => ['class' => '', 'alt' => $markthistopic],
+                    'attr'    => ['class' => 'editing_highlight', 'title' => $markthistopic]
+                ];
             }
         }
-        if (!$onsectionpage and !empty($onesection)) {
-            $controls[] = $onesection;
+        if (!$onsectionpage && $section->section && $section->uservisible) {
+            $title                  = get_string('showonly', 'format_folderview');
+            $controls['onesection'] = [
+                'url'     => course_get_url($course, $section->section),
+                'icon'    => 't/viewdetails',
+                'name'    => $title,
+                'pixattr' => ['class' => '', 'alt' => $title],
+                'attr'    => ['class' => 'icon one', 'title' => $title],
+            ];
         }
 
         return array_reverse(
-            array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage))
+            array_merge($controls, parent::section_edit_control_items($course, $section, $onsectionpage))
         );
     }
 
@@ -163,7 +194,8 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         echo html_writer::start_tag('div', array('class' => 'multi-section'));
         echo $this->all_sections_visibility_toggles();
-        echo $this->output->heading(get_section_name($course, $sections[0]), 2, 'mdl-align title headingblock header outline pagetitle', 'pagetitle');
+        echo $this->output->heading(get_section_name($course, $sections[0]), 2,
+            'mdl-align title headingblock header outline pagetitle', 'pagetitle');
         $this->action_menu($course, $sections[0], $sections, $modnames);
         parent::print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused);
         echo html_writer::end_tag('div');
@@ -178,7 +210,7 @@ class format_folderview_renderer extends format_section_renderer_base {
 
         // Can we view the section in question?
         if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
-            // This section doesn't exist
+            // This section doesn't exist.
             print_error('unknowncoursesection', 'error', null, $course->fullname);
             return;
         }
@@ -196,7 +228,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         // Copy activity clipboard..
         echo $this->course_activity_clipboard($course, $displaysection);
 
-        // Start single-section div
+        // Start single-section div.
         echo html_writer::start_tag('div', array('class' => 'single-section'));
 
         // The requested section page.
@@ -208,7 +240,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         $sectiontitle .= html_writer::start_tag('div', array('class' => 'section-navigation navigationtitle'));
         $sectiontitle .= html_writer::tag('span', $sectionnavlinks['previous'], array('class' => 'mdl-left'));
         $sectiontitle .= html_writer::tag('span', $sectionnavlinks['next'], array('class' => 'mdl-right'));
-        // Title attributes
+        // Title attributes.
         $classes = 'sectionname';
         if (!$thissection->visible) {
             $classes .= ' dimmed_text';
@@ -326,45 +358,53 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo "<div id=\"menuPanel\" class=\"nodialog\" style=\"border-collapse:collapse\">";
         echo "<div id=\"menuPanelTabs\" class=\"menuPanelTabs\">";
 
-        // Action Menu - links for adding content and editing page
+        // Action Menu - links for adding content and editing page.
         if ($isroot && $hascourseupdate) {
             $before = get_string('showaddtopic', 'format_folderview');
             $after  = get_string('hideaddtopic', 'format_folderview');
             $text   = get_string('addtopic', 'format_folderview');
-            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addTopic'));
+            echo html_writer::tag('span', html_writer::link('#', $text,
+                array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)),
+                array('class' => 'tab', 'id' => 'tab_addTopic'));
         }
         if ($hasmanageactivities) {
             $before = get_string('showaddresource', 'format_folderview');
             $after  = get_string('hideaddresource', 'format_folderview');
             $text   = get_string('addresource', 'format_folderview');
-            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addResource'));
+            echo html_writer::tag('span', html_writer::link('#', $text,
+                array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)),
+                array('class' => 'tab', 'id' => 'tab_addResource'));
         }
         if ($this->page->user_can_edit_blocks()) {
             $before = get_string('showaddblock', 'format_folderview');
             $after  = get_string('hideaddblock', 'format_folderview');
             $text   = get_string('addblock', 'format_folderview');
-            echo html_writer::tag('span', html_writer::link('#', $text, array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)), array('class' => 'tab', 'id' => 'tab_addBlock'));
+            echo html_writer::tag('span', html_writer::link('#', $text,
+                array('role' => 'button', 'data-before-aria-label' => $before, 'data-after-aria-label' => $after)),
+                array('class' => 'tab', 'id' => 'tab_addBlock'));
         }
         if ($hascourseupdate) {
-            echo html_writer::tag('span', html_writer::link(new moodle_url('/course/editsection.php?id='.$section->id), get_string('topicsettings', 'format_folderview')), array('class' => 'tab nodialog', 'id' => 'tab_editTopic'));
+            echo html_writer::tag('span', html_writer::link(new moodle_url('/course/editsection.php?id='.$section->id),
+                get_string('topicsettings', 'format_folderview')), array('class' => 'tab nodialog', 'id' => 'tab_editTopic'));
         }
         echo '</div>';
 
-        // End of Action Menu
+        // End of Action Menu.
 
         echo '<div id="menuPanelDialog">';
 
-        //output the Cancel button for all add dialogs
+        // Output the Cancel button for all add dialogs.
         $strclose = get_string('close', 'format_folderview');
-        $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null, array('title' => $strclose, 'aria-label' => $strclose, 'role' => 'button'));
+        $icon     = $this->output->action_icon('#', new pix_icon('close', $strclose, 'format_folderview'), null,
+            array('title' => $strclose, 'aria-label' => $strclose, 'role' => 'button'));
         echo html_writer::tag('div', $icon, array('id' => 'menuPanelClose'));
 
         echo $this->action_menu_add_topic_dialog($course);
         $this->action_menu_add_resources_dialog($course, $section, $sections, $modnames);
         echo $this->action_menu_add_block_dialog();
 
-        echo '</div>'; //close dialog content area
-        echo '</div>'; //close dialog container
+        echo '</div>'; // Close dialog content area.
+        echo '</div>'; // Close dialog container.
     }
 
     /**
@@ -381,13 +421,17 @@ class format_folderview_renderer extends format_section_renderer_base {
                 'courseid' => $course->id,
             ));
 
-            $output .= html_writer::start_tag('div', array('id' => 'addTopic', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
+            $output .= html_writer::start_tag('div',
+                array('id' => 'addTopic', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
             $output .= $this->output->heading(get_string('addtopic', 'format_folderview'), 3, 'dialoglabel');
             $output .= html_writer::start_tag('form', array('method' => 'post', 'action' => $url->out_omit_querystring()));
             $output .= html_writer::input_hidden_params($url);
-            $output .= html_writer::tag('div', html_writer::label(get_string('sectiontitle', 'format_folderview'), 'newsection', true, array('class' => 'accesshide')));
-            $output .= html_writer::empty_tag('input', array('id' => 'newsection', 'type' => 'text', 'size' => 50, 'name' => 'newsection', 'class' => 'focusonme'));
-            $output .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'addtopic', 'value' => get_string('addtopic', 'format_folderview')));
+            $output .= html_writer::tag('div', html_writer::label(get_string('sectiontitle', 'format_folderview'),
+                'newsection', true, array('class' => 'accesshide')));
+            $output .= html_writer::empty_tag('input',
+                array('id' => 'newsection', 'type' => 'text', 'size' => 50, 'name' => 'newsection', 'class' => 'focusonme'));
+            $output .= html_writer::empty_tag('input',
+                array('type' => 'submit', 'name' => 'addtopic', 'value' => get_string('addtopic', 'format_folderview')));
             $output .= html_writer::end_tag('form');
             $output .= html_writer::end_tag('div');
         }
@@ -469,7 +513,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         }
         echo $output;
 
-        //Output topic selector (which defaults to current topic)
+        // Output topic selector (which defaults to current topic).
         if ($section->section != 0) {
             $currenttopic = " (".get_string('currenttopic', 'format_folderview').")";
         } else {
@@ -489,7 +533,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         echo '<input type="submit" name="do" id="addResourceButton" value="'.$straddresource.'" />';
         echo '</div>';
 
-        echo '<div class="clearfix"></div></form></div>'; //close addResource
+        echo '<div class="clearfix"></div></form></div>'; // Close addResource.
     }
 
     /**
@@ -554,10 +598,13 @@ class format_folderview_renderer extends format_section_renderer_base {
             core_collator::asort($menu);
 
             foreach ($menu as $blockname => $blocktitle) {
-                $menu[$blockname] = html_writer::link(new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname)), $blocktitle);
+                $url = new moodle_url($this->page->url, array('sesskey' => sesskey(), 'bui_addblock' => $blockname));
+
+                $menu[$blockname] = html_writer::link($url, $blocktitle);
                 $menu[$blockname] = html_writer::tag('div', $menu[$blockname]);
             }
-            $output = html_writer::tag('span', get_string('addblock', 'format_folderview'), array('class' => 'accesshide dialoglabel'));
+            $output = html_writer::tag('span', get_string('addblock', 'format_folderview'),
+                array('class' => 'accesshide dialoglabel'));
 
             $size = ceil(count($menu) / 3);
 
@@ -566,6 +613,7 @@ class format_folderview_renderer extends format_section_renderer_base {
             }
             $output .= html_writer::tag('div', '&nbsp;', array('class' => 'clearfix'));
         }
-        return html_writer::tag('div', $output, array('id' => 'addBlock', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
+        return html_writer::tag('div', $output,
+            array('id' => 'addBlock', 'class' => 'dialog', 'tabindex' => '-1', 'role' => 'region'));
     }
 }
