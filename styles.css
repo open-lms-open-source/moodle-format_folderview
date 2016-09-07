@@ -209,4 +209,7 @@
 
 .format-folderview .block_settings .block_tree .tree_item.modchoosertoggle {display:none;}
 
-#page-course-view-folderview #selAddToSection {max-width: 100%;}
+#page-course-view-folderview #selAddToSection,
+#page-course-view-folderview .select.autosubmit.jumpmenu {
+    max-width: 100%;
+}
