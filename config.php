@@ -25,5 +25,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 // The default blocks layout for this course format.
 $format['defaultblocks'] = ':news_items,calendar_upcoming,recent_activity';

@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $plugin->version   = 2016012600;
 $plugin->requires  = 2015111604;       // Requires this Moodle version (3.0.4).
 $plugin->component = 'format_folderview';
