@@ -66,3 +66,4 @@ $string['topicexpanded'] = 'Topic expanded';
 $string['topiccollapsed'] = 'Topic collapsed';
 $string['alltopicsexpanded'] = 'All topics are now expanded';
 $string['alltopicscollapsed'] = 'All topics are now collapsed';
+$string['err_sectionnanme'] = 'Topic name cannot be more than 255 characters.';

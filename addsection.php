@@ -34,16 +34,18 @@ has_capability('moodle/course:update', $context);
 require_sesskey();
 
 $course = course_get_format($courseid)->get_course();
-$course->numsections++;
 
-course_get_format($course)->update_course_format_options(
-    array('numsections' => $course->numsections)
-);
-course_create_sections_if_missing($course, range(0, $course->numsections));
+if (strlen($sectioname)<256) {
+    $course->numsections++;
+    course_create_sections_if_missing($course, range(0, $course->numsections));
+    $modinfo = get_fast_modinfo($course);
+    $section = $modinfo->get_section_info($course->numsections, MUST_EXIST);
+    course_get_format($course)->update_course_format_options(
+        array('numsections' => $course->numsections)
+    );
+    $DB->set_field('course_sections', 'name', $sectioname, array('id' => $section->id));
+    rebuild_course_cache($course->id);
+    redirect(course_get_url($course, $section));
+}
 
-$modinfo = get_fast_modinfo($course);
-$section = $modinfo->get_section_info($course->numsections, MUST_EXIST);
-$DB->set_field('course_sections', 'name', $sectioname, array('id' => $section->id));
-rebuild_course_cache($course->id);
-
-redirect(course_get_url($course, $section->section));
+redirect(course_get_url($course), get_string('err_sectionnanme', 'format_folderview'), null, \core\output\notification::NOTIFY_ERROR);
