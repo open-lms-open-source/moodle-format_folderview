@@ -35,7 +35,7 @@ require_sesskey();
 
 $course = course_get_format($courseid)->get_course();
 
-if (strlen($sectioname)<256) {
+if (strlen($sectioname) < 256) {
     $course->numsections++;
     course_create_sections_if_missing($course, range(0, $course->numsections));
     $modinfo = get_fast_modinfo($course);
@@ -48,4 +48,5 @@ if (strlen($sectioname)<256) {
     redirect(course_get_url($course, $section));
 }
 
-redirect(course_get_url($course), get_string('err_sectionnanme', 'format_folderview'), null, \core\output\notification::NOTIFY_ERROR);
+redirect(course_get_url($course), get_string('err_sectionnanme', 'format_folderview'), null,
+    \core\output\notification::NOTIFY_ERROR);
