@@ -210,23 +210,6 @@ class format_folderview extends format_base {
 }
 
 /**
- * Course deletion
- *
- * @param $courseid
- * @param bool $showfeedback
- */
-function format_folderview_delete_course($courseid, $showfeedback = false) {
-    global $DB, $OUTPUT;
-
-    $DB->delete_records('format_folderview_display', array('course' => $courseid));
-    $DB->delete_records('user_preferences', array('name' => "format_folderview_$courseid"));
-
-    if ($showfeedback) {
-        echo $OUTPUT->notification(get_string('deletecoursedone', 'format_folderview'), 'notifysuccess');
-    }
-}
-
-/**
  * Display the section that the user was last viewing
  *
  * @param stdClass $course

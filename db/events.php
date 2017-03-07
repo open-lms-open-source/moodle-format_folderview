@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Format Version.
+ * Event observers for Folderview format.
  *
- * @package   format_folderview
- * @copyright Copyright (c) 2009 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    format_folderview
+ * @author     Sam Chaffee
+ * @copyright  Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017030700;
-$plugin->requires  = 2016120500;
-$plugin->component = 'format_folderview';
-$plugin->release   = '3.2.1';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->dependencies = array('local_mr' => 2016121300);
+$observers = [
+    [
+        'eventname' => '\core\event\course_content_deleted',
+        'callback'  => '\format_folderview\observer::course_content_deleted',
+    ],
+];
