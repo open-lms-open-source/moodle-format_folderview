@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2017030700;
 $plugin->requires  = 2016120500;
 $plugin->component = 'format_folderview';
-$plugin->release   = '3.2.1';
+$plugin->release   = '3.2.2';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->dependencies = array('local_mr' => 2016121300);
