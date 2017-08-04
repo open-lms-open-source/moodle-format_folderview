@@ -109,7 +109,7 @@ class format_folderview_renderer extends format_section_renderer_base {
         if ($section->section != 0 && !$PAGE->user_is_editing() && !$onsectionpage && $section->uservisible) {
             $sectionname = get_section_name($course, $section);
             $title       = get_string('showonlytopic', 'format_folderview', $sectionname);
-            $attributes  = ['src' => $this->output->pix_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title];
+            $attributes  = ['src' => $this->output->image_url('one', 'format_folderview'), 'class' => 'icon one', 'alt' => $title];
             $img         = html_writer::empty_tag('img', $attributes);
             $rightcontent .= html_writer::link(course_get_url($course, $section->section), $img, ['title' => $title]);
         }
