@@ -80,6 +80,15 @@ class format_folderview extends format_base {
         return $ajaxsupport;
     }
 
+    /**
+     * Indicates whether the course format supports the creation of a news forum.
+     *
+     * @return bool
+     */
+    public function supports_news() {
+        return true;
+    }
+
     public function ajax_section_move() {
         global $PAGE;
 
