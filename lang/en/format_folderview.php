@@ -67,3 +67,10 @@ $string['topiccollapsed'] = 'Topic collapsed';
 $string['alltopicsexpanded'] = 'All topics are now expanded';
 $string['alltopicscollapsed'] = 'All topics are now collapsed';
 $string['err_sectionnanme'] = "Topic name can't be more than 255 characters.";
+// Privacy strings.
+$string['privacy:metadata:format_folderview_display'] = 'Information about the last section displayed when a user accessed to a course.';
+$string['privacy:metadata:format_folderview_display:course'] = 'The ID of the course where this section was read.';
+$string['privacy:metadata:format_folderview_display:userid'] = 'The ID of the user reading the section.';
+$string['privacy:metadata:format_folderview_display:display'] = 'The ID of the section stored.';
+$string['privacy:metadata:preference:folderview'] = 'The sections that a user set to be displayed as expanded when accessing the course.';
+$string['privacy:request:preference:sections'] = 'The sections ID that the user prefers to be displayed as explanded when accessing the course with ID: {$a}';
