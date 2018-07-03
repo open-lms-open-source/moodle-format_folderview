@@ -122,7 +122,7 @@ class provider implements
         foreach ($records as $record) {
             writer::with_context($context)->export_data($subcontext, (object) [
                 'fvid' => $record->fvid,
-                'userid' => $record->userid,
+                'userid' => transform::user($record->userid),
                 'courseid' => $record->course,
                 'sectionid' => $record->display,
             ]);
