@@ -18,7 +18,7 @@
  * Rest endpoint.
  *
  * @package   format_folderview
- * @copyright Copyright (c) 2009 Moodlerooms Inc. (http://www.moodlerooms.com)
+ * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
