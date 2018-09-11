@@ -18,7 +18,7 @@
  * Renderer.
  *
  * @package   format_folderview
- * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboardopenlms.com)
+ * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/course/format/folderview/lib.php');
 /**
  * Renderer for outputting the folderview course format.
  *
- * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboardopenlms.com)
+ * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboard.com)
  * @license http://opensource.org/licenses/gpl-3.0.html GNU Public License
  * @package format_folderview
  * @author David Mills

@@ -18,7 +18,7 @@
  * Strings for component 'format_folderview'
  *
  * @package   format_folderview
- * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboardopenlms.com)
+ * @copyright Copyright (c) 2009 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
